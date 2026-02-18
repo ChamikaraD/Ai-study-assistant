@@ -1,16 +1,19 @@
-# ai_study_assistant
+# AI Study Assistant
 
-A new Flutter project.
+A multimodal AI-powered mobile application built using Flutter and FastAPI.
 
-## Getting Started
+## Features
+- Upload Notes (PDF, TXT)
+- Record Lectures (Speech-to-Text)
+- AI Summarization
+- Context-based Q&A
+- Study History
 
-This project is a starting point for a Flutter application.
+## Tech Stack
+- Flutter
+- FastAPI
+- OpenAI / Whisper
+- Firebase / Supabase
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Architecture
+Flutter → FastAPI → AI Models

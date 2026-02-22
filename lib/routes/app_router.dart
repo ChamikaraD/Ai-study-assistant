@@ -4,6 +4,10 @@ import '../features/splash/splash_screen.dart';
 import '../features/auth/screens/sign_in_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/auth/screens/sign_up_screen.dart';
+import '../features/settings/screens/manage_account_screen.dart';
+import '../features/settings/screens/language_screen.dart';
+import '../features/settings/screens/privacy_screen.dart';
+import '../features/settings/screens/terms_screen.dart';
 
 
 final GoRouter appRouter = GoRouter(
@@ -43,6 +47,23 @@ final GoRouter appRouter = GoRouter(
       path: '/signup',
       builder: (context, state) => const SignUpScreen(),
     ),
+    GoRoute(
+      path: '/manage-account',
+      builder: (context, state) => const ManageAccountScreen(),
+    ),
+    GoRoute(
+      path: '/language',
+      builder: (context, state) => const LanguageScreen(),
+    ),
+    GoRoute(
+      path: '/privacy',
+      builder: (context, state) => const PrivacyScreen(),
+    ),
+    GoRoute(
+      path: '/terms',
+      builder: (context, state) => const TermsScreen(),
+    ),
+
 
   ],
 );

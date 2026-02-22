@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../services/auth_service.dart';
 
-// Import the sub-screens we created earlier
-import 'manage_account_screen.dart';
-import 'language_screen.dart';
-import 'privacy_screen.dart';
-import 'terms_screen.dart';
-
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final AuthService _authService = AuthService();
+
+  @override
   Widget build(BuildContext context) {
+    final user = _authService.currentUser;
+    final email = user?.email ?? '';
+    final name = email.isNotEmpty ? email.split('@')[0] : 'User';
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6FF), // The exact light blueish-grey background from the design
+      backgroundColor: const Color(0xFFF2F6FF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leadingWidth: 40, // Brings the back arrow closer to the title
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-          onPressed: () {}, // Add navigation logic if needed
-        ),
         title: const Text(
           'Settings',
           style: TextStyle(
@@ -29,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        titleSpacing: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.black),
@@ -42,38 +44,40 @@ class SettingsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
 
-            // --- Profile Section ---
+            /// PROFILE SECTION
             const CircleAvatar(
               radius: 45,
-              backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Replace with your actual asset or network image
+              backgroundImage:
+              NetworkImage('https://via.placeholder.com/150'),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Hi ! Sarah',
-              style: TextStyle(
+
+            /// USER NAME
+            Text(
+              'Hi $name',
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Manage Account Button
+            /// MANAGE ACCOUNT
             SizedBox(
-              height: 34, // Exact slim height from the screenshot
+              height: 34,
               child: OutlinedButton(
                 onPressed: () {
-                  // Navigate to Manage Account Screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ManageAccountScreen()),
-                  );
+                  context.go('/manage-account');
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFB0C4DE), width: 1.5), // Faint blue border
+                  side: const BorderSide(
+                      color: Color(0xFFB0C4DE), width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // Fully rounded ends
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 24),
                 ),
                 child: const Text(
                   'Manage Your Account',
@@ -85,11 +89,13 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 40),
 
-            // --- Settings Options ---
+            /// SETTINGS OPTIONS
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   _buildSettingsTile(
@@ -97,11 +103,7 @@ class SettingsScreen extends StatelessWidget {
                     title: 'Language',
                     trailingText: 'English',
                     onTap: () {
-                      // Navigate to Language Screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LanguageScreen()),
-                      );
+                      context.go('/language');
                     },
                   ),
                   const SizedBox(height: 10),
@@ -109,40 +111,37 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.shield_outlined,
                     title: 'Privacy',
                     onTap: () {
-                      // Navigate to Privacy Screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PrivacyScreen()),
-                      );
+                      context.go('/privacy');
                     },
                   ),
                   const SizedBox(height: 10),
                   _buildSettingsTile(
                     icon: Icons.description_outlined,
-                    title: 'Terms & Conditions', // Corrected from the screenshot's double "Privacy" typo
+                    title: 'Terms & Conditions',
                     onTap: () {
-                      // Navigate to Terms Screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const TermsScreen()),
-                      );
+                      context.go('/terms');
                     },
                   ),
-
                   const SizedBox(height: 20),
 
-                  // --- Logout Button ---
+                  /// LOGOUT BUTTON
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: OutlinedButton(
-                      onPressed: () {
-                        // Add your Firebase logout logic here later
+                      onPressed: () async {
+                        await _authService.signOut();
+
+                        if (context.mounted) {
+                          context.go('/signin');
+                        }
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.red, width: 1),
+                        side: const BorderSide(
+                            color: Colors.red, width: 1),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // Rounded rectangle, not pill
+                          borderRadius:
+                          BorderRadius.circular(10),
                         ),
                         backgroundColor: Colors.transparent,
                       ),
@@ -165,23 +164,26 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  // Helper widget updated to require an onTap callback
+  /// SETTINGS TILE WIDGET
   Widget _buildSettingsTile({
     required IconData icon,
     required String title,
     String? trailingText,
-    required VoidCallback onTap, // We added this line
+    required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD6E4FF), width: 1.2), // The exact soft blue border
+        border: Border.all(
+            color: const Color(0xFFD6E4FF), width: 1.2),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-        dense: true, // Keeps the row tight like in the design
-        leading: Icon(icon, color: Colors.black54, size: 22),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 0),
+        dense: true,
+        leading: Icon(icon,
+            color: Colors.black54, size: 22),
         title: Text(
           title,
           style: const TextStyle(
@@ -196,14 +198,16 @@ class SettingsScreen extends StatelessWidget {
             if (trailingText != null) ...[
               Text(
                 trailingText,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: const TextStyle(
+                    color: Colors.grey, fontSize: 13),
               ),
               const SizedBox(width: 8),
             ],
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 14),
+            const Icon(Icons.arrow_forward_ios,
+                color: Colors.grey, size: 14),
           ],
         ),
-        onTap: onTap, // This connects the tap event to the function passed in
+        onTap: onTap,
       ),
     );
   }

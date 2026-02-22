@@ -1,4 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/user_model.dart';
+
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -20,8 +23,25 @@ class AuthService {
       email: email,
       password: password,
     );
-    return credential.user;
+
+    final user = credential.user;
+
+    if (user != null) {
+      final userModel = UserModel(
+        uid: user.uid,
+        email: user.email ?? '',
+        createdAt: DateTime.now(),
+      );
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(userModel.toMap());
+    }
+
+    return user;
   }
+
 
   Future<void> signOut() async {
     await _auth.signOut();

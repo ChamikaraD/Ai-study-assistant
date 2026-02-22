@@ -34,6 +34,8 @@ dependencies:
   go_router: ^13.2.0
   firebase_core: ^2.25.4
   firebase_auth: ^4.17.4
+  cloud_firestore: ^4.15.9
+
 
 
   # The following adds the Cupertino Icons font to your application.

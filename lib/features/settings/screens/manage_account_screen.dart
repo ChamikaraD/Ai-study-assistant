@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // 1. Add this import!
 
 class ManageAccountScreen extends StatelessWidget {
   const ManageAccountScreen({super.key});
@@ -12,7 +13,8 @@ class ManageAccountScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          // 2. Update the back button
+          onPressed: () => context.pop(),
         ),
         title: const Text('Manage Account', style: TextStyle(color: Colors.black)),
       ),
@@ -38,7 +40,8 @@ class ManageAccountScreen extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                // 3. Update the save button to also pop back to settings
+                onPressed: () => context.pop(),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
                 child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontSize: 16)),
               ),

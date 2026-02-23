@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../../services/auth_service.dart';
+import 'package:go_router/go_router.dart'; // Import go_router instead of the local screens
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  final AuthService _authService = AuthService();
-
-  @override
   Widget build(BuildContext context) {
-    final user = _authService.currentUser;
-    final email = user?.email ?? '';
-    final name = email.isNotEmpty ? email.split('@')[0] : 'User';
-
     return Scaffold(
       backgroundColor: const Color(0xFFF2F6FF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leadingWidth: 40,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          onPressed: () {},
+        ),
         title: const Text(
           'Settings',
           style: TextStyle(
@@ -31,7 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: false,
+        titleSpacing: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.black),
@@ -44,40 +37,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const SizedBox(height: 30),
 
-            /// PROFILE SECTION
+            // --- Profile Section ---
             const CircleAvatar(
               radius: 45,
-              backgroundImage:
-              NetworkImage('https://via.placeholder.com/150'),
+              backgroundImage: NetworkImage('https://via.placeholder.com/150'),
             ),
             const SizedBox(height: 12),
-
-            /// USER NAME
-            Text(
-              'Hi $name',
-              style: const TextStyle(
+            const Text(
+              'Hi ! Sarah',
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
-
             const SizedBox(height: 12),
 
-            /// MANAGE ACCOUNT
+            // Manage Account Button
             SizedBox(
               height: 34,
               child: OutlinedButton(
                 onPressed: () {
-                  context.go('/manage-account');
+                  // USING GO_ROUTER INSTEAD OF NAVIGATOR
+                  context.push('/manage-account');
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                      color: Color(0xFFB0C4DE), width: 1.5),
+                  side: const BorderSide(color: Color(0xFFB0C4DE), width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                 ),
                 child: const Text(
                   'Manage Your Account',
@@ -89,13 +77,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 40),
 
-            /// SETTINGS OPTIONS
+            // --- Settings Options ---
             Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   _buildSettingsTile(
@@ -103,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: 'Language',
                     trailingText: 'English',
                     onTap: () {
-                      context.go('/language');
+                      context.push('/language'); // go_router navigation
                     },
                   ),
                   const SizedBox(height: 10),
@@ -111,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.shield_outlined,
                     title: 'Privacy',
                     onTap: () {
-                      context.go('/privacy');
+                      context.push('/privacy'); // go_router navigation
                     },
                   ),
                   const SizedBox(height: 10),
@@ -119,29 +105,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
                     onTap: () {
-                      context.go('/terms');
+                      context.push('/terms'); // go_router navigation
                     },
                   ),
+
                   const SizedBox(height: 20),
 
-                  /// LOGOUT BUTTON
+                  // --- Logout Button ---
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: OutlinedButton(
-                      onPressed: () async {
-                        await _authService.signOut();
-
-                        if (context.mounted) {
-                          context.go('/signin');
-                        }
+                      onPressed: () {
+                        // Firebase logout logic will go here
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                            color: Colors.red, width: 1),
+                        side: const BorderSide(color: Colors.red, width: 1),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor: Colors.transparent,
                       ),
@@ -164,7 +145,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  /// SETTINGS TILE WIDGET
   Widget _buildSettingsTile({
     required IconData icon,
     required String title,
@@ -175,15 +155,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            color: const Color(0xFFD6E4FF), width: 1.2),
+        border: Border.all(color: const Color(0xFFD6E4FF), width: 1.2),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         dense: true,
-        leading: Icon(icon,
-            color: Colors.black54, size: 22),
+        leading: Icon(icon, color: Colors.black54, size: 22),
         title: Text(
           title,
           style: const TextStyle(
@@ -198,13 +175,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (trailingText != null) ...[
               Text(
                 trailingText,
-                style: const TextStyle(
-                    color: Colors.grey, fontSize: 13),
+                style: const TextStyle(color: Colors.grey, fontSize: 13),
               ),
               const SizedBox(width: 8),
             ],
-            const Icon(Icons.arrow_forward_ios,
-                color: Colors.grey, size: 14),
+            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 14),
           ],
         ),
         onTap: onTap,

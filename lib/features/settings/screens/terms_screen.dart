@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // 1. Added go_router import!
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
@@ -12,7 +13,8 @@ class TermsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          // 2. Updated to use context.pop()
+          onPressed: () => context.pop(),
         ),
         title: const Text('Terms & Conditions', style: TextStyle(color: Colors.black)),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // 1. Add this import!
 
 class LanguageScreen extends StatelessWidget {
   const LanguageScreen({super.key});
@@ -12,7 +13,8 @@ class LanguageScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          // 2. Update this to use context.pop()
+          onPressed: () => context.pop(),
         ),
         title: const Text('Language', style: TextStyle(color: Colors.black)),
       ),

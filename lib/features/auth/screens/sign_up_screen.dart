@@ -15,6 +15,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final AuthService _authService = AuthService();
+  final nameController = TextEditingController();
+
 
   bool isLoading = false;
 
@@ -30,9 +32,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       await _authService.signUp(
+        nameController.text.trim(),
         emailController.text.trim(),
         passwordController.text.trim(),
       );
+
 
       if (mounted) {
         context.go('/dashboard');
@@ -64,6 +68,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Full Name"),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: "Email"),

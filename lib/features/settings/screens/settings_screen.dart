@@ -47,8 +47,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             /// PROFILE SECTION
             const CircleAvatar(
               radius: 45,
-              backgroundImage:
-              NetworkImage('https://via.placeholder.com/150'),
+              backgroundColor: Colors.blue,
+              child: Icon(
+                Icons.person,
+                size: 40,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 12),
 

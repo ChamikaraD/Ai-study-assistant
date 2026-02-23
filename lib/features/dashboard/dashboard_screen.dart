@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../settings/screens/settings_screen.dart';
 //import '../history/history_screen.dart';      // If exists
-//import '../ai/ask_ai_screen.dart';           // If exists
+import '../ai/screens/ask_ai_screen.dart';
 import '../../core/constants/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final List<Widget> pages = [
       _buildDashboardHome(),   // Your main dashboard UI
       const HistoryPlaceholder(),
-      const AskAIPlaceholder(),
+      const AskAiScreen(),
       const SettingsScreen(),
     ];
 

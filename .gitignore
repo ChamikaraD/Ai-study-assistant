@@ -59,7 +59,7 @@ linux/flutter/ephemeral/
 web/.dart_tool/
 
 # Firebase (protect secrets)
-google-services.json
+#google-services.json
 GoogleService-Info.plist
 firebase_options.dart
 

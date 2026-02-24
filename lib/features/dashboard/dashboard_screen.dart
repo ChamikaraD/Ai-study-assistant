@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../settings/screens/settings_screen.dart';
-//import '../history/history_screen.dart';      // If exists
-import '../ai/screens/ask_ai_screen.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../settings/screens/settings_screen.dart';
+import '../ai/screens/ask_ai_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      _buildDashboardHome(),   // Your main dashboard UI
+      _buildHomeContent(),
       const HistoryPlaceholder(),
       const AskAiScreen(),
       const SettingsScreen(),
@@ -25,7 +25,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       body: pages[_currentIndex],
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         selectedItemColor: AppColors.primary,
@@ -58,9 +57,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   /// ===============================
-  /// DASHBOARD MAIN CONTENT
+  /// HOME CONTENT
   /// ===============================
-  Widget _buildDashboardHome() {
+  Widget _buildHomeContent() {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -77,7 +76,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             const Text(
               "Welcome Back 👋",
               style: TextStyle(
@@ -94,26 +92,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              children: const [
+              children: [
+
+                /// Upload Notes
                 DashboardCard(
                   icon: Icons.upload_file_outlined,
                   title: "Upload Notes",
                   subtitle: "Add PDFs",
+                  onTap: () {
+                    context.push('/upload-notes');
+                  },
                 ),
+
+                /// Record Lecture
                 DashboardCard(
                   icon: Icons.mic_none_outlined,
                   title: "Record Lecture",
                   subtitle: "Capture audio",
+                  onTap: () {
+                    context.push('/record');
+                  },
                 ),
+
+                /// View Summaries
                 DashboardCard(
                   icon: Icons.description_outlined,
                   title: "View Summaries",
                   subtitle: "AI results",
+                  onTap: () {
+                    context.push('/summaries');
+                  },
                 ),
+
+                /// Ask AI
                 DashboardCard(
                   icon: Icons.chat_bubble_outline,
                   title: "Ask AI",
                   subtitle: "Study help",
+                  onTap: () {
+                    context.push('/ask-ai');
+                  },
                 ),
               ],
             ),
@@ -129,6 +147,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 16),
 
+            const ActivityTile(
+              title: "Math Notes Summary",
+              subtitle: "Generated 2 hours ago",
+              icon: Icons.description,
+            ),
+
+            const ActivityTile(
+              title: "AI Question Asked",
+              subtitle: "Explained recursion",
+              icon: Icons.smart_toy,
+            ),
           ],
         ),
       ),
@@ -137,59 +166,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 /// ===============================
-/// Dashboard Card
+/// DASHBOARD CARD (Clickable)
 /// ===============================
 class DashboardCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
 
   const DashboardCard({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40, color: AppColors.primary),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.2),
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: AppColors.primary),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 /// ===============================
-/// Activity Tile
+/// ACTIVITY TILE
 /// ===============================
 class ActivityTile extends StatelessWidget {
   final String title;
@@ -210,7 +247,9 @@ class ActivityTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.2),
+        ),
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
@@ -223,7 +262,7 @@ class ActivityTile extends StatelessWidget {
 }
 
 /// ===============================
-/// Placeholders
+/// HISTORY PLACEHOLDER
 /// ===============================
 class HistoryPlaceholder extends StatelessWidget {
   const HistoryPlaceholder({super.key});
@@ -231,18 +270,9 @@ class HistoryPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(child: Text("History Screen")),
-    );
-  }
-}
-
-class AskAIPlaceholder extends StatelessWidget {
-  const AskAIPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Ask AI Screen")),
+      body: Center(
+        child: Text("History Screen"),
+      ),
     );
   }
 }

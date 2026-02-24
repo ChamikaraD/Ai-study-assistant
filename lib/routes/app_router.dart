@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../features/notes/screens/upload_notes_screen.dart';
 import '../features/splash/splash_screen.dart';
 import '../features/auth/screens/sign_in_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
@@ -31,6 +32,10 @@ final GoRouter appRouter = GoRouter(
   },
 
   routes: [
+    GoRoute(
+      path: '/upload-notes',
+      builder: (context, state) => const UploadNotesScreen(),
+    ),
     GoRoute(
       path: '/',
       builder: (context, state) => const SplashScreen(),

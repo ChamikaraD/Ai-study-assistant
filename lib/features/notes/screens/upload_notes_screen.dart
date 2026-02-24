@@ -11,7 +11,7 @@ class UploadNotesScreen extends StatefulWidget {
 }
 
 class _UploadNotesScreenState extends State<UploadNotesScreen> {
-  final HFAiService _aiService = HFAiService();
+  final HuggingFaceService _aiService = HuggingFaceService();
 
   String extractedText = "";
   String summary = "";

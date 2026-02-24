@@ -3,12 +3,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'routes/app_router.dart';
 import 'core/constants//app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");   // Load .env first
-  await Firebase.initializeApp();        // Then initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+
+  );        // Then initialize Firebase
 
   runApp(const MyApp());
 }

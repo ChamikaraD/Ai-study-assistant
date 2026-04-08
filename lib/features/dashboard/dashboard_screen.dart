@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../settings/screens/settings_screen.dart';
 import '../ai/screens/ask_ai_screen.dart';
+import '../notes/screens/upload_notes_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -39,10 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.home_outlined),
             label: "Home",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: "History",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
           BottomNavigationBarItem(
             icon: Icon(Icons.smart_toy_outlined),
             label: "Ask AI",
@@ -61,15 +59,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   /// ===============================
   Widget _buildHomeContent() {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Color(0xFFEEF3FF),
+
       appBar: AppBar(
-        title: const Text("AI Study Assistant"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
+        backgroundColor: Color(0xFFEEF3FF),
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Image.asset("assets/logo.png", height: 40),
+            Text(
+              "AI Study Assistant",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Icon(Icons.notifications, color: Colors.black),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -78,10 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             const Text(
               "Welcome Back 👋",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
 
@@ -93,44 +99,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               children: [
-
                 /// Upload Notes
-                DashboardCard(
-                  icon: Icons.upload_file_outlined,
-                  title: "Upload Notes",
-                  subtitle: "Add PDFs",
-                  onTap: () {
-                    context.push('/upload-notes');
+                IconButton(
+                  icon: Image.asset("assets/upload notes.png"),
+                  iconSize: 100,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadNotesScreen(),
+                      ),
+                    );
                   },
                 ),
 
                 /// Record Lecture
-                DashboardCard(
-                  icon: Icons.mic_none_outlined,
-                  title: "Record Lecture",
-                  subtitle: "Capture audio",
-                  onTap: () {
-                    context.push('/record');
+                IconButton(
+                  icon: Image.asset("assets/record lectures.png"),
+                  iconSize: 100,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadNotesScreen(),
+                      ),
+                    );
                   },
                 ),
 
                 /// View Summaries
-                DashboardCard(
-                  icon: Icons.description_outlined,
-                  title: "View Summaries",
-                  subtitle: "AI results",
-                  onTap: () {
-                    context.push('/summaries');
+                IconButton(
+                  icon: Image.asset("assets/view summaries.png"),
+                  iconSize: 100,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadNotesScreen(),
+                      ),
+                    );
                   },
                 ),
 
                 /// Ask AI
-                DashboardCard(
-                  icon: Icons.chat_bubble_outline,
-                  title: "Ask AI",
-                  subtitle: "Study help",
-                  onTap: () {
-                    context.push('/ask-ai');
+                IconButton(
+                  icon: Image.asset("assets/ask questions.png"),
+                  iconSize: 100,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadNotesScreen(),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -140,10 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const Text(
               "Recent Activities",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
@@ -191,9 +209,7 @@ class DashboardCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
-          ),
+          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
         ),
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -204,19 +220,13 @@ class DashboardCard extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
@@ -247,9 +257,7 @@ class ActivityTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.2),
-        ),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
@@ -269,10 +277,6 @@ class HistoryPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("History Screen"),
-      ),
-    );
+    return const Scaffold(body: Center(child: Text("History Screen")));
   }
 }

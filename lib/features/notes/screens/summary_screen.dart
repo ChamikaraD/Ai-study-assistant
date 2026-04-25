@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/pdf_service.dart';
+import 'edit_summary_screen.dart';
 
 class SummaryScreen extends StatefulWidget {
   const SummaryScreen({super.key});
@@ -125,24 +127,65 @@ class _SummaryScreenState
   ////////////////////////////////////////////////////
 
   void _openSummaryDialog(
+      String docId,
       String title,
-      String summary) {
-
+      String summary,
+      ) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(title),
-        content:
-        SingleChildScrollView(
+
+        content: SingleChildScrollView(
           child: Text(summary),
         ),
+
         actions: [
+
+          //////////////////////////////////////
+          /// EXPORT PDF
+
+          TextButton(
+            onPressed: () async {
+
+              await PdfService.exportSummaryToPdf(
+                title,
+                summary,
+              );
+
+            },
+            child: const Text("Export PDF"),
+          ),
+
+          //////////////////////////////////////
+          /// EDIT
+
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      EditSummaryScreen(
+                        docId: docId,
+                        title: title,
+                        summary: summary,
+                      ),
+                ),
+              );
+            },
+            child: const Text("Edit"),
+          ),
+
+          //////////////////////////////////////
+          /// CLOSE
+
           TextButton(
             onPressed: () =>
-                Navigator.pop(
-                    context),
-            child:
-            const Text("Close"),
+                Navigator.pop(context),
+            child: const Text("Close"),
           ),
         ],
       ),

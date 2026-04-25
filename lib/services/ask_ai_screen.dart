@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/openai_services.dart';
+import '../../../services/chat_service.dart';
 
 
 class AskAiScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _AskAiScreenState extends State<AskAiScreen> {
   final ScrollController _scrollController = ScrollController();
 
   final OpenAIService _aiService = OpenAIService();
+  final ChatService _chatService = ChatService();
 
   List<Map<String, String>> messages = [];
 
@@ -38,12 +40,14 @@ class _AskAiScreenState extends State<AskAiScreen> {
 
     _controller.clear();
 
-    _scrollToBottom();
-
     try {
-      final response =
-      await _aiService.askQuestion(question);
+      /// GET AI RESPONSE
+      final response = await _aiService.askQuestion(
+        question: question,
+        systemPrompt: getSystemPrompt(),
+      );
 
+      /// SHOW MESSAGE
       setState(() {
         messages.add({
           "role": "ai",
@@ -53,16 +57,24 @@ class _AskAiScreenState extends State<AskAiScreen> {
         isLoading = false;
       });
 
-      _scrollToBottom();
+      /// SAVE TO FIRESTORE
+      await _chatService.saveChat(
+        question: question,
+        answer: response,
+        mode: widget.mode,
+      );
 
     } catch (e) {
       setState(() {
         isLoading = false;
+
         messages.add({
           "role": "ai",
-          "text": "Something went wrong. Try again.",
+          "text": "Something went wrong",
         });
       });
+
+      print("AI error: $e");
     }
   }
 

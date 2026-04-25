@@ -75,7 +75,7 @@ class _RecordLectureScreenState extends State<RecordLectureScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => SummaryScreen(summary: _summary),
+            builder: (_) => const SummaryScreen(),
           ),
         );
       }

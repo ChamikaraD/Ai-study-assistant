@@ -24,7 +24,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadUserData() async {
     final user = _authService.currentUser;
-    if (user == null) return;
+
+    if (user == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
       final doc = await FirebaseFirestore.instance
@@ -33,12 +39,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           .get();
 
       if (doc.exists) {
-        setState(() {
-          _userName = doc.data()?['name'] ?? "User";
-          _isLoading = false;
-        });
+        _userName =
+            doc.data()?['name'] ?? "User";
+      } else {
+        _userName = "User";
       }
+
+      setState(() {
+        _isLoading = false;
+      });
     } catch (e) {
+      print("User load error: $e");
+
       setState(() {
         _isLoading = false;
       });

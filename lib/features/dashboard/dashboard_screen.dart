@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/constants/app_colors.dart';
 import '../ai/screens/chat_detail_screen.dart';
 import '../history/screens/summary_detail_screen.dart';
+import '../history/screens/view_summaries_screen.dart';
 import '../notes/screens/note_detail_screen.dart';
 import '../recording/screens/recording_detail_screen.dart';
 import '../settings/screens/settings_screen.dart';
@@ -144,8 +145,13 @@ class _DashboardScreenState
                 subtitle:
                 "AI results",
                 onTap: () {
-                  context.push(
-                      '/summaries');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                      const ViewSummariesScreen(),
+                    ),
+                  );
                 },
               ),
 

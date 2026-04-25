@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/chat_bubble.dart';
-import '../widgets/bottom_nav_bar.dart';
+
 
 class AskAIScreen extends StatelessWidget {
   const AskAIScreen({Key? key}) : super(key: key);

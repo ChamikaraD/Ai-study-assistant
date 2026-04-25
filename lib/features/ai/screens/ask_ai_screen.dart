@@ -1,87 +1,266 @@
 import 'package:flutter/material.dart';
-import '../../../services/ai_service.dart';
-import '../../../core/constants/app_colors.dart';
+import '../../../services/openai_services.dart';
 
 class AskAiScreen extends StatefulWidget {
-  const AskAiScreen({super.key});
+  final String mode;
+
+  const AskAiScreen({
+    super.key,
+    this.mode = "general",
+  });
 
   @override
   State<AskAiScreen> createState() => _AskAiScreenState();
 }
 
 class _AskAiScreenState extends State<AskAiScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final AiService _aiService = AiService();
+  final TextEditingController _controller =
+  TextEditingController();
 
-  String _response = "";
-  bool _isLoading = false;
+  final ScrollController _scrollController =
+  ScrollController();
 
-  Future<void> _askQuestion() async {
-    final question = _controller.text.trim();
+  final OpenAIService _aiService =
+  OpenAIService();
+
+  List<Map<String, String>> messages = [];
+
+  bool isLoading = false;
+
+  /// SYSTEM PROMPT
+  String getSystemPrompt() {
+    if (widget.mode == "education") {
+      return """
+You are an AI Study Assistant.
+
+Only answer educational questions such as:
+
+- Mathematics
+- Science
+- Programming
+- Exams
+- Homework
+- Study notes
+
+If the question is NOT educational,
+politely respond:
+
+"I can only help with education-related questions."
+""";
+    }
+
+    return "You are a helpful AI assistant.";
+  }
+
+  /// SEND MESSAGE
+  Future<void> sendMessage() async {
+    String question =
+    _controller.text.trim();
+
     if (question.isEmpty) return;
 
     setState(() {
-      _isLoading = true;
-      _response = "";
+      messages.add({
+        "role": "user",
+        "text": question,
+      });
+
+      isLoading = true;
     });
+
+    _controller.clear();
+
+    _scrollToBottom();
 
     try {
-      final result = await _aiService.askAI(question);
+      final response =
+      await _aiService.askQuestion(
+        question: question,
+        systemPrompt: getSystemPrompt(),
+      );
 
       setState(() {
-        _response = result;
+        messages.add({
+          "role": "ai",
+          "text": response,
+        });
+
+        isLoading = false;
       });
+
+      _scrollToBottom();
     } catch (e) {
       setState(() {
-        _response = "Error: $e";
+        isLoading = false;
+
+        messages.add({
+          "role": "ai",
+          "text":
+          "Something went wrong. Try again.",
+        });
       });
     }
+  }
 
-    setState(() {
-      _isLoading = false;
-    });
+  void _scrollToBottom() {
+    Future.delayed(
+      const Duration(milliseconds: 200),
+          () {
+        if (_scrollController
+            .hasClients) {
+          _scrollController.animateTo(
+            _scrollController
+                .position.maxScrollExtent,
+            duration:
+            const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Ask AI"),
+        title: Text(
+          widget.mode == "education"
+              ? "Study Assistant"
+              : "Ask AI",
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+      body: Column(
+        children: [
 
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: "Ask any study question...",
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            ElevatedButton(
-              onPressed: _isLoading ? null : _askQuestion,
-              child: _isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text("Ask"),
-            ),
-
-            const SizedBox(height: 24),
-
+          /// EMPTY STATE
+          if (messages.isEmpty)
             Expanded(
-              child: SingleChildScrollView(
+              child: Center(
                 child: Text(
-                  _response,
-                  style: const TextStyle(fontSize: 16),
+                  widget.mode ==
+                      "education"
+                      ? "Ask your study questions 📚"
+                      : "Ask anything 🤖",
+                  style:
+                  const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
-          ],
-        ),
+
+          /// CHAT
+          if (messages.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                controller:
+                _scrollController,
+                padding:
+                const EdgeInsets.all(16),
+                itemCount:
+                messages.length,
+                itemBuilder:
+                    (context, index) {
+                  final message =
+                  messages[index];
+
+                  bool isUser =
+                      message["role"] ==
+                          "user";
+
+                  return Align(
+                    alignment: isUser
+                        ? Alignment
+                        .centerRight
+                        : Alignment
+                        .centerLeft,
+                    child: Container(
+                      margin:
+                      const EdgeInsets
+                          .symmetric(
+                        vertical: 6,
+                      ),
+                      padding:
+                      const EdgeInsets
+                          .all(14),
+                      constraints:
+                      const BoxConstraints(
+                        maxWidth: 280,
+                      ),
+                      decoration:
+                      BoxDecoration(
+                        color: isUser
+                            ? Colors.blue
+                            : Colors
+                            .grey
+                            .shade200,
+                        borderRadius:
+                        BorderRadius
+                            .circular(
+                          16,
+                        ),
+                      ),
+                      child: Text(
+                        message["text"]!,
+                        style:
+                        TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : Colors
+                              .black87,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+          if (isLoading)
+            const Padding(
+              padding:
+              EdgeInsets.all(10),
+              child:
+              CircularProgressIndicator(),
+            ),
+
+          /// INPUT
+          Container(
+            padding:
+            const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller:
+                    _controller,
+                    onSubmitted:
+                        (_) =>
+                        sendMessage(),
+                    decoration:
+                    const InputDecoration(
+                      hintText:
+                      "Ask question...",
+                      border:
+                      OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon:
+                  const Icon(Icons.send),
+                  onPressed:
+                  sendMessage,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

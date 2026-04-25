@@ -56,9 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  /// ===============================
-  /// HOME CONTENT
-  /// ===============================
+
   Widget _buildHomeContent() {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -130,7 +128,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   title: "Ask AI",
                   subtitle: "Study help",
                   onTap: () {
-                    context.push('/ask-ai');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                        const AskAiScreen(
+                          mode: "education",
+                        ),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -147,17 +153,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 16),
 
-            const ActivityTile(
-              title: "Math Notes Summary",
-              subtitle: "Generated 2 hours ago",
-              icon: Icons.description,
-            ),
-
-            const ActivityTile(
-              title: "AI Question Asked",
-              subtitle: "Explained recursion",
-              icon: Icons.smart_toy,
-            ),
           ],
         ),
       ),
@@ -165,9 +160,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-/// ===============================
-/// DASHBOARD CARD (Clickable)
-/// ===============================
 class DashboardCard extends StatelessWidget {
   final IconData icon;
   final String title;

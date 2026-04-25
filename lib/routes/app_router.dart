@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../features/ai/screens/ask_ai_screen.dart';
 import '../features/notes/screens/upload_notes_screen.dart';
+import '../features/recording/screens/record_lecture_screen.dart';
 import '../features/splash/splash_screen.dart';
 import '../features/auth/screens/sign_in_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
@@ -67,6 +69,15 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/terms',
       builder: (context, state) => const TermsScreen(),
+    ),
+    GoRoute(
+      path: '/record',
+      builder: (context, state) =>
+      const RecordLectureScreen(),
+    ),
+    GoRoute(
+      path: '/ask-ai',
+      builder: (context, state) => const AskAiScreen(),
     ),
 
 

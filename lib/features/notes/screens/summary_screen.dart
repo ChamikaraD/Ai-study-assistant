@@ -454,14 +454,13 @@ class _SummaryScreenState
                                 .arrow_forward_ios,
                             size: 16,
                           ),
-
-                          onTap:
-                              () {
-                            _openSummaryDialog(
-                              title,
-                              summary,
-                            );
-                          },
+                            onTap: () {
+                              _openSummaryDialog(
+                                doc.id,
+                                title,
+                                summary,
+                              );
+                            }
                         ),
                       ),
                     );

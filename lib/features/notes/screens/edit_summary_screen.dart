@@ -35,7 +35,6 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
     super.initState();
 
     titleController = TextEditingController(text: widget.title);
-
     summaryController = TextEditingController(text: widget.summary);
   }
 
@@ -92,7 +91,7 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
             const SizedBox(height: 16),
 
             //////////////////////////////////////
-            /// SUMMARY
+            /// SUMMARY INPUT FIELD
             Expanded(
               child: TextField(
                 controller: summaryController,

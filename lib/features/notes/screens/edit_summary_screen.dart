@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// Screen to edit an existing summary
 class EditSummaryScreen extends StatefulWidget {
   final String docId;
   final String title;
@@ -19,10 +20,11 @@ class EditSummaryScreen extends StatefulWidget {
 }
 
 class _EditSummaryScreenState extends State<EditSummaryScreen> {
+  // get current logged in user
   final user = FirebaseAuth.instance.currentUser;
 
+  // controllers to manage input fields
   late TextEditingController titleController;
-
   late TextEditingController summaryController;
 
   bool isSaving = false;

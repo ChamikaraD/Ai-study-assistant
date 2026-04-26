@@ -18,11 +18,7 @@ class HuggingFaceService {
       },
       body: jsonEncode({
         "inputs": text,
-        "parameters": {
-          "max_length": 130,
-          "min_length": 30,
-          "do_sample": false
-        }
+        "parameters": {"max_length": 130, "min_length": 30, "do_sample": false},
       }),
     );
 

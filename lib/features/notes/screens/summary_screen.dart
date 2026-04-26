@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../services/pdf_service.dart';
+import '../../quiz/screens/quize_screen.dart';
 import 'edit_summary_screen.dart';
 
 class SummaryScreen extends StatefulWidget {
@@ -179,6 +180,22 @@ Shared from AI Study Assistant
               );
             },
             child: const Text("Share"),
+          ),
+
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => QuizScreen(
+                    summary: summary,
+                  ),
+                ),
+              );
+            },
+            child: const Text("Generate Quiz"),
           ),
 
           //////////////////////////////////////

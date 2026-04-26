@@ -1,11 +1,13 @@
+import 'package:ai_study_assistant/features/notes/screens/summary_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../ai/screens/chat_detail_screen.dart';
 import '../history/screens/summary_detail_screen.dart';
-import '../history/screens/view_summaries_screen.dart';
+
 import '../notes/screens/note_detail_screen.dart';
 import '../recording/screens/recording_detail_screen.dart';
 import '../settings/screens/settings_screen.dart';
@@ -25,99 +27,163 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState
     extends State<DashboardScreen> {
+
   int _currentIndex = 0;
+
+  /////////////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
+
     final List<Widget> pages = [
+
       _buildHomeContent(),
+
       const StudyHistoryScreen(),
+
       const AskAiScreen(),
+
       const SettingsScreen(),
+
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+
+      backgroundColor:
+      AppColors.background,
 
       appBar: AppBar(
-        title: const Text("AI Study Assistant"),
+        title: const Text(
+            "AI Study Assistant"),
       ),
 
       body: pages[_currentIndex],
 
       bottomNavigationBar:
       BottomNavigationBar(
-        currentIndex: _currentIndex,
+
+        currentIndex:
+        _currentIndex,
+
         selectedItemColor:
         AppColors.primary,
+
         type:
         BottomNavigationBarType
             .fixed,
+
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
+
         items: const [
+
           BottomNavigationBarItem(
-            icon:
-            Icon(Icons.home_outlined),
+            icon: Icon(
+                Icons.home_outlined),
             label: "Home",
           ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: "History",
           ),
+
           BottomNavigationBarItem(
             icon: Icon(
                 Icons.smart_toy_outlined),
             label: "Ask AI",
           ),
+
           BottomNavigationBarItem(
             icon: Icon(
                 Icons.settings_outlined),
             label: "Settings",
           ),
+
         ],
       ),
     );
   }
 
+  /////////////////////////////////////////////////////////
   /// HOME CONTENT
 
   Widget _buildHomeContent() {
+
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+    String name =
+        user?.email
+            ?.split("@")
+            .first ??
+            "Student";
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+
+      padding:
+      const EdgeInsets.all(16),
+
       child: Column(
+
         crossAxisAlignment:
         CrossAxisAlignment.start,
+
         children: [
-          const Text(
-            "Welcome Back 👋",
-            style: TextStyle(
-              fontSize: 22,
+
+          ///////////////////////////////////////////////////
+          /// PERSONALIZED GREETING
+
+          Text(
+            "Welcome back, $name 👋",
+            style: const TextStyle(
+              fontSize: 24,
               fontWeight:
               FontWeight.bold,
             ),
           ),
 
+          const SizedBox(height: 6),
+
+          const Text(
+            "Ready to continue learning?",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          ),
+
           const SizedBox(height: 20),
 
+          ///////////////////////////////////////////////////
           /// DASHBOARD GRID
 
           GridView.count(
+
             crossAxisCount: 2,
+
             shrinkWrap: true,
+
             physics:
             const NeverScrollableScrollPhysics(),
+
             crossAxisSpacing: 16,
+
             mainAxisSpacing: 16,
+
             children: [
+
               DashboardCard(
-                icon: Icons
-                    .upload_file_outlined,
-                title: "Upload Notes",
-                subtitle: "Add PDFs",
+                icon:
+                Icons.upload_file_outlined,
+                title:
+                "Upload Notes",
+                subtitle:
+                "Add PDFs",
+
                 onTap: () {
                   context.push(
                       '/upload-notes');
@@ -131,6 +197,7 @@ class _DashboardScreenState
                 "Record Lecture",
                 subtitle:
                 "Capture audio",
+
                 onTap: () {
                   context.push(
                       '/record');
@@ -138,54 +205,61 @@ class _DashboardScreenState
               ),
 
               DashboardCard(
-                icon: Icons
-                    .description_outlined,
+                icon:
+                Icons.description_outlined,
                 title:
                 "View Summaries",
                 subtitle:
                 "AI results",
+
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                      const ViewSummariesScreen(),
+                      const SummaryScreen(),
                     ),
                   );
                 },
               ),
 
               DashboardCard(
-                icon: Icons
-                    .chat_bubble_outline,
-                title: "Ask AI",
+                icon:
+                Icons.chat_bubble_outline,
+                title:
+                "Ask AI",
                 subtitle:
                 "Study help",
+
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
                       const AskAiScreen(
-                        mode:
-                        "education",
-                      ),
+                          mode:
+                          "education"),
                     ),
                   );
                 },
               ),
+
             ],
           ),
 
           const SizedBox(height: 30),
 
+          ///////////////////////////////////////////////////
           /// RECENT HEADER
 
           Row(
+
             mainAxisAlignment:
             MainAxisAlignment
                 .spaceBetween,
+
             children: [
+
               const Text(
                 "Recent Activities",
                 style: TextStyle(
@@ -194,22 +268,30 @@ class _DashboardScreenState
                   FontWeight.w600,
                 ),
               ),
+
               TextButton(
+
                 onPressed: () {
                   setState(() {
-                    _currentIndex = 1; // History tab index
+                    _currentIndex = 1;
                   });
                 },
-                child: const Text("View All"),
+
+                child:
+                const Text("View All"),
+
               )
+
             ],
           ),
 
           const SizedBox(height: 16),
 
+          ///////////////////////////////////////////////////
           /// RECENT ACTIVITIES
 
           const RecentActivitiesWidget(),
+
         ],
       ),
     );
@@ -217,11 +299,11 @@ class _DashboardScreenState
 }
 
 ///////////////////////////////////////////////////////////
-/// DASHBOARD CARD
+/// IMPROVED DASHBOARD CARD
 ///////////////////////////////////////////////////////////
 
-class DashboardCard
-    extends StatelessWidget {
+class DashboardCard extends StatelessWidget {
+
   final IconData icon;
   final String title;
   final String subtitle;
@@ -238,58 +320,131 @@ class DashboardCard
   @override
   Widget build(
       BuildContext context) {
-    return InkWell(
-      borderRadius:
-      BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius:
-          BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.primary
-                .withOpacity(0.2),
+
+    return Material(
+
+      color: Colors.transparent,
+
+      child: InkWell(
+
+        borderRadius:
+        BorderRadius.circular(18),
+
+        onTap: onTap,
+
+        child: AnimatedContainer(
+
+          duration:
+          const Duration(
+              milliseconds: 200),
+
+          padding:
+          const EdgeInsets.all(18),
+
+          decoration:
+          BoxDecoration(
+
+            color: Colors.white,
+
+            borderRadius:
+            BorderRadius.circular(
+                18),
+
+            border: Border.all(
+              color: AppColors.primary
+                  .withOpacity(0.15),
+            ),
+
+            boxShadow: [
+
+              BoxShadow(
+                color: Colors.black
+                    .withOpacity(0.05),
+
+                blurRadius: 8,
+
+                offset:
+                const Offset(0, 4),
+              ),
+
+            ],
           ),
-        ),
-        padding:
-        const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.center,
-          children: [
-            Icon(icon,
-                size: 40,
-                color:
-                AppColors.primary),
 
-            const SizedBox(height: 12),
+          child: Column(
 
-            Text(
-              title,
-              textAlign:
-              TextAlign.center,
-              style:
-              const TextStyle(
-                fontWeight:
-                FontWeight.w600,
-                fontSize: 16,
+            mainAxisAlignment:
+            MainAxisAlignment.center,
+
+            children: [
+
+              ///////////////////////////////////////////////////
+              /// ICON
+
+              Container(
+
+                padding:
+                const EdgeInsets.all(
+                    14),
+
+                decoration:
+                BoxDecoration(
+
+                  color:
+                  AppColors.primary
+                      .withOpacity(
+                      0.1),
+
+                  shape:
+                  BoxShape.circle,
+                ),
+
+                child: Icon(
+                  icon,
+                  size: 32,
+                  color:
+                  AppColors.primary,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 4),
+              const SizedBox(
+                  height: 14),
 
-            Text(
-              subtitle,
-              textAlign:
-              TextAlign.center,
-              style:
-              const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+              ///////////////////////////////////////////////////
+              /// TITLE
+
+              Text(
+                title,
+                textAlign:
+                TextAlign.center,
+
+                style:
+                const TextStyle(
+                  fontWeight:
+                  FontWeight.w600,
+
+                  fontSize: 16,
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(
+                  height: 6),
+
+              ///////////////////////////////////////////////////
+              /// SUBTITLE
+
+              Text(
+                subtitle,
+                textAlign:
+                TextAlign.center,
+
+                style:
+                const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -302,32 +457,36 @@ class DashboardCard
 
 class RecentActivitiesWidget
     extends StatelessWidget {
+
   const RecentActivitiesWidget(
       {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context) {
+
     final ActivityService service =
     ActivityService();
 
     return StreamBuilder<
         List<ActivityModel>>(
+
       stream:
       service.streamRecentActivities(),
+
       builder: (context, snapshot) {
-        /// LOADING
 
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
+
           return const Center(
             child:
             CircularProgressIndicator(),
           );
         }
 
-        /// ERROR
-
         if (snapshot.hasError) {
+
           return Text(
             "Error: ${snapshot.error}",
             style: const TextStyle(
@@ -335,10 +494,9 @@ class RecentActivitiesWidget
           );
         }
 
-        /// EMPTY
-
         if (!snapshot.hasData ||
             snapshot.data!.isEmpty) {
+
           return const Text(
               "No recent activities");
         }
@@ -347,22 +505,33 @@ class RecentActivitiesWidget
         snapshot.data!;
 
         return ListView.builder(
+
           shrinkWrap: true,
+
           physics:
           const NeverScrollableScrollPhysics(),
-          itemCount: activities.length,
+
+          itemCount:
+          activities.length,
+
           itemBuilder:
               (context, index) {
+
             final activity =
             activities[index];
 
             return ActivityTile(
-              title: activity.title,
+
+              title:
+              activity.title,
+
               subtitle:
               _timeAgo(
                   activity.createdAt),
+
               icon:
-              _getIcon(activity.type),
+              _getIcon(
+                  activity.type),
 
               onTap: () {
                 _openActivity(
@@ -382,33 +551,41 @@ class RecentActivitiesWidget
       BuildContext context,
       ActivityModel activity,
       ) {
+
     switch (activity.type) {
 
       case "chat":
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) =>
                 ChatDetailScreen(
-                  chatId: activity.id,
+                  chatId:
+                  activity.id,
                 ),
           ),
         );
+
         break;
 
       case "summary":
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) =>
                 SummaryDetailScreen(
-                  summaryId: activity.id,
+                  summaryId:
+                  activity.id,
                 ),
           ),
         );
+
         break;
 
       case "recording":
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -419,18 +596,22 @@ class RecentActivitiesWidget
                 ),
           ),
         );
+
         break;
 
       case "note":
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) =>
                 NoteDetailScreen(
-                  noteId: activity.id,
+                  noteId:
+                  activity.id,
                 ),
           ),
         );
+
         break;
     }
   }
@@ -438,7 +619,9 @@ class RecentActivitiesWidget
   /////////////////////////////////////////////////////////
 
   IconData _getIcon(String type) {
+
     switch (type) {
+
       case "chat":
         return Icons.chat;
 
@@ -460,6 +643,7 @@ class RecentActivitiesWidget
 
   String _timeAgo(
       Timestamp timestamp) {
+
     final date =
     timestamp.toDate();
 
@@ -489,47 +673,72 @@ class RecentActivitiesWidget
 
 class ActivityTile
     extends StatelessWidget {
+
   final String title;
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
 
   const ActivityTile({
+
     super.key,
+
     required this.title,
+
     required this.subtitle,
+
     required this.icon,
+
     required this.onTap,
+
   });
 
   @override
   Widget build(
       BuildContext context) {
+
     return InkWell(
+
       borderRadius:
       BorderRadius.circular(14),
+
       onTap: onTap,
+
       child: Container(
+
         margin:
         const EdgeInsets.only(
             bottom: 12),
-        decoration: BoxDecoration(
+
+        decoration:
+        BoxDecoration(
+
           color: Colors.white,
+
           borderRadius:
           BorderRadius.circular(14),
+
           border: Border.all(
             color: AppColors.primary
                 .withOpacity(0.2),
           ),
         ),
+
         child: ListTile(
+
           leading: Icon(
             icon,
-            color: AppColors.primary,
+            color:
+            AppColors.primary,
           ),
+
           title: Text(title),
-          subtitle: Text(subtitle),
-          trailing: const Icon(
+
+          subtitle:
+          Text(subtitle),
+
+          trailing:
+          const Icon(
             Icons.arrow_forward_ios,
             size: 14,
           ),

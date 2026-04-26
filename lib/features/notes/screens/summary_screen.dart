@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:share_plus/share_plus.dart';
+
 import '../../../services/pdf_service.dart';
 import 'edit_summary_screen.dart';
 
@@ -8,27 +10,62 @@ class SummaryScreen extends StatefulWidget {
   const SummaryScreen({super.key});
 
   @override
-  State<SummaryScreen> createState() =>
-      _SummaryScreenState();
+  State<SummaryScreen> createState() => _SummaryScreenState();
 }
 
-class _SummaryScreenState
-    extends State<SummaryScreen> {
+class _SummaryScreenState extends State<SummaryScreen> {
+  final user = FirebaseAuth.instance.currentUser;
 
-  final user =
-      FirebaseAuth.instance.currentUser;
-
-  final TextEditingController
-  _searchController =
+  final TextEditingController _searchController =
   TextEditingController();
 
   String searchQuery = "";
 
-  ////////////////////////////////////////////////////
+  bool showFavoritesOnly = false;
+
+  //////////////////////////////////////////////////////////////
+  /// SHARE SUMMARY
+
+  Future<void> _shareSummary(
+      String title,
+      String summary,
+      ) async {
+    final text = """
+$title
+
+$summary
+
+Shared from AI Study Assistant
+""";
+
+    await Share.share(text);
+  }
+
+  //////////////////////////////////////////////////////////////
+  /// TOGGLE FAVORITE
+
+  Future<void> _toggleFavorite(
+      String docId,
+      bool currentValue,
+      ) async {
+    if (user == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .collection('summaries')
+        .doc(docId)
+        .update({
+      "isFavorite": !currentValue,
+    });
+  }
+
+  //////////////////////////////////////////////////////////////
+  /// DELETE
 
   Future<void> _deleteSummary(
-      String docId) async {
-
+      String docId,
+      ) async {
     if (user == null) return;
 
     await FirebaseFirestore.instance
@@ -38,48 +75,38 @@ class _SummaryScreenState
         .doc(docId)
         .delete();
 
-    if (mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-              "Summary deleted"),
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Summary deleted"),
+      ),
+    );
   }
 
-  ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////
+  /// CONFIRM DELETE
 
   Future<bool> _confirmDelete(
-      String docId) async {
-
+      String docId,
+      ) async {
     final result =
     await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title:
-        const Text("Delete Summary"),
+        title: const Text("Delete Summary"),
         content: const Text(
             "Are you sure you want to delete this summary?"),
         actions: [
           TextButton(
             onPressed: () =>
-                Navigator.pop(
-                    context,
-                    false),
-            child:
-            const Text("Cancel"),
+                Navigator.pop(context, false),
+            child: const Text("Cancel"),
           ),
           TextButton(
             onPressed: () =>
-                Navigator.pop(
-                    context,
-                    true),
+                Navigator.pop(context, true),
             child: const Text(
               "Delete",
-              style: TextStyle(
-                  color: Colors.red),
+              style: TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -94,20 +121,18 @@ class _SummaryScreenState
     return false;
   }
 
-  ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////
+  /// TIME AGO
 
   String _timeAgo(
-      Timestamp? timestamp) {
+      Timestamp? timestamp,
+      ) {
+    if (timestamp == null) return "";
 
-    if (timestamp == null)
-      return "";
-
-    final date =
-    timestamp.toDate();
+    final date = timestamp.toDate();
 
     final diff =
-    DateTime.now()
-        .difference(date);
+    DateTime.now().difference(date);
 
     if (diff.inMinutes < 60) {
       return "${diff.inMinutes} min ago";
@@ -124,7 +149,8 @@ class _SummaryScreenState
     return "${diff.inDays} days ago";
   }
 
-  ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////
+  /// OPEN SUMMARY DIALOG
 
   void _openSummaryDialog(
       String docId,
@@ -143,16 +169,27 @@ class _SummaryScreenState
         actions: [
 
           //////////////////////////////////////
+          /// SHARE
+
+          TextButton(
+            onPressed: () async {
+              await _shareSummary(
+                title,
+                summary,
+              );
+            },
+            child: const Text("Share"),
+          ),
+
+          //////////////////////////////////////
           /// EXPORT PDF
 
           TextButton(
             onPressed: () async {
-
               await PdfService.exportSummaryToPdf(
                 title,
                 summary,
               );
-
             },
             child: const Text("Export PDF"),
           ),
@@ -192,32 +229,46 @@ class _SummaryScreenState
     );
   }
 
-  ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////
 
   @override
-  Widget build(
-      BuildContext context) {
-
+  Widget build(BuildContext context) {
     if (user == null) {
       return const Scaffold(
         body: Center(
-          child: Text(
-              "User not logged in"),
+          child: Text("User not logged in"),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title:
-        const Text(
-            "View Summaries"),
+        title: const Text("View Summaries"),
+
+        actions: [
+
+          /// FAVORITE FILTER
+
+          IconButton(
+            icon: Icon(
+              showFavoritesOnly
+                  ? Icons.star
+                  : Icons.star_border,
+            ),
+            onPressed: () {
+              setState(() {
+                showFavoritesOnly =
+                !showFavoritesOnly;
+              });
+            },
+          ),
+        ],
       ),
 
       body: Column(
         children: [
 
-          //////////////////////////////////////
+          //////////////////////////////////////////////////////
           /// SEARCH BAR
 
           Padding(
@@ -226,33 +277,28 @@ class _SummaryScreenState
             child: TextField(
               controller:
               _searchController,
-
               onChanged: (value) {
                 setState(() {
                   searchQuery =
-                      value
-                          .toLowerCase();
+                      value.toLowerCase();
                 });
               },
-
               decoration:
               InputDecoration(
                 hintText:
                 "Search summaries...",
                 prefixIcon:
-                const Icon(
-                    Icons.search),
+                const Icon(Icons.search),
                 border:
                 OutlineInputBorder(
                   borderRadius:
-                  BorderRadius
-                      .circular(12),
+                  BorderRadius.circular(12),
                 ),
               ),
             ),
           ),
 
-          //////////////////////////////////////
+          //////////////////////////////////////////////////////
           /// SUMMARY LIST
 
           Expanded(
@@ -263,8 +309,7 @@ class _SummaryScreenState
                   .instance
                   .collection(
                   'users')
-                  .doc(
-                  user!.uid)
+                  .doc(user!.uid)
                   .collection(
                   'summaries')
                   .orderBy(
@@ -275,27 +320,21 @@ class _SummaryScreenState
                   .snapshots(),
 
               builder:
-                  (context,
-                  snapshot) {
+                  (context, snapshot) {
 
                 if (snapshot
                     .connectionState ==
                     ConnectionState
                         .waiting) {
-
                   return const Center(
                     child:
                     CircularProgressIndicator(),
                   );
                 }
 
-                if (!snapshot
-                    .hasData ||
-                    snapshot
-                        .data!
-                        .docs
+                if (!snapshot.hasData ||
+                    snapshot.data!.docs
                         .isEmpty) {
-
                   return const Center(
                     child: Text(
                         "No summaries yet"),
@@ -303,17 +342,14 @@ class _SummaryScreenState
                 }
 
                 final allDocs =
-                    snapshot
-                        .data!
-                        .docs;
+                    snapshot.data!.docs;
 
-                //////////////////////////////////////
+                //////////////////////////////////////////////////////
                 /// FILTER
 
                 final filteredDocs =
                 allDocs.where(
                       (doc) {
-
                     final data =
                     doc.data()
                     as Map<
@@ -330,25 +366,31 @@ class _SummaryScreenState
                             ?.toLowerCase() ??
                             "";
 
-                    return title
-                        .contains(
+                    final isFavorite =
+                        data['isFavorite'] ??
+                            false;
+
+                    if (showFavoritesOnly &&
+                        !isFavorite) {
+                      return false;
+                    }
+
+                    return title.contains(
                         searchQuery) ||
-                        summary
-                            .contains(
+                        summary.contains(
                             searchQuery);
                   },
                 ).toList();
 
                 if (filteredDocs
                     .isEmpty) {
-
                   return const Center(
                     child: Text(
                         "No results found"),
                   );
                 }
 
-                //////////////////////////////////////
+                //////////////////////////////////////////////////////
                 /// LIST VIEW
 
                 return ListView.builder(
@@ -361,12 +403,10 @@ class _SummaryScreenState
                       .length,
 
                   itemBuilder:
-                      (context,
-                      index) {
+                      (context, index) {
 
                     final doc =
-                    filteredDocs[
-                    index];
+                    filteredDocs[index];
 
                     final data =
                     doc.data()
@@ -385,10 +425,13 @@ class _SummaryScreenState
                     final createdAt =
                     data['createdAt'];
 
+                    final isFavorite =
+                        data['isFavorite'] ??
+                            false;
+
                     return Dismissible(
                       key:
-                      ValueKey(
-                          doc.id),
+                      ValueKey(doc.id),
 
                       direction:
                       DismissDirection
@@ -408,16 +451,12 @@ class _SummaryScreenState
                         padding:
                         const EdgeInsets
                             .symmetric(
-                          horizontal:
-                          20,
+                          horizontal: 20,
                         ),
-                        color:
-                        Colors.red,
-                        child:
-                        const Icon(
+                        color: Colors.red,
+                        child: const Icon(
                           Icons.delete,
-                          color:
-                          Colors.white,
+                          color: Colors.white,
                           size: 30,
                         ),
                       ),
@@ -449,18 +488,47 @@ class _SummaryScreenState
                           ),
 
                           trailing:
-                          const Icon(
-                            Icons
-                                .arrow_forward_ios,
-                            size: 16,
+                          Row(
+                            mainAxisSize:
+                            MainAxisSize.min,
+                            children: [
+
+                              /// FAVORITE
+
+                              IconButton(
+                                icon: Icon(
+                                  isFavorite
+                                      ? Icons.star
+                                      : Icons
+                                      .star_border,
+                                  color:
+                                  Colors
+                                      .amber,
+                                ),
+                                onPressed:
+                                    () {
+                                  _toggleFavorite(
+                                    doc.id,
+                                    isFavorite,
+                                  );
+                                },
+                              ),
+
+                              const Icon(
+                                Icons
+                                    .arrow_forward_ios,
+                                size: 16,
+                              ),
+                            ],
                           ),
-                            onTap: () {
-                              _openSummaryDialog(
-                                doc.id,
-                                title,
-                                summary,
-                              );
-                            }
+
+                          onTap: () {
+                            _openSummaryDialog(
+                              doc.id,
+                              title,
+                              summary,
+                            );
+                          },
                         ),
                       ),
                     );

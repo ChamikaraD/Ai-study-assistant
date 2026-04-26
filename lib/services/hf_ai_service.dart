@@ -3,34 +3,73 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HuggingFaceService {
-  final String _apiKey = dotenv.env['HF_API_KEY']!;
+  final String _apiKey = dotenv.env['HF_API_KEY'] ?? "";
 
-  Future<String> summarizeText(String text) async {
-    final url = Uri.parse(
-      "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn",
-    );
+  /// Model endpoint
+  final String _url =
+      "https://router.huggingface.co/hf-inference/models/google/flan-t5-large";
 
-    final response = await http.post(
-      url,
-      headers: {
-        "Authorization": "Bearer $_apiKey",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "inputs": text,
-        "parameters": {
-          "max_length": 130,
-          "min_length": 30,
-          "do_sample": false
+  /// =========================
+  /// ASK AI
+  /// =========================
+  Future<String> askQuestion(String question) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_url),
+        headers: {
+          "Authorization": "Bearer $_apiKey",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "inputs": question,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data is List && data.isNotEmpty) {
+          return data[0]["generated_text"] ?? "No response";
         }
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data[0]['summary_text'];
-    } else {
-      throw Exception("Error: ${response.body}");
+        return "Empty response";
+      }
+
+      return "API Error: ${response.body}";
+    } catch (e) {
+      return "Failed to get response";
+    }
+  }
+
+  /// =========================
+  /// SUMMARIZE TEXT
+  /// =========================
+  Future<String> summarizeText(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_url),
+        headers: {
+          "Authorization": "Bearer $_apiKey",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "inputs": "Summarize this text: $text",
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data is List && data.isNotEmpty) {
+          return data[0]["generated_text"] ?? "No summary";
+        }
+
+        return "Empty summary";
+      }
+
+      return "API Error: ${response.body}";
+    } catch (e) {
+      return "Failed to summarize";
     }
   }
 }

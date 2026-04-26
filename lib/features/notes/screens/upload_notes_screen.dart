@@ -27,18 +27,14 @@ class _UploadNotesScreenState
   bool isLoading = false;
   bool isSaving = false;
 
-  ////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   Future<void> pickFile() async {
     try {
       FilePickerResult? result =
-      await FilePicker.platform
-          .pickFiles(
+      await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: [
-          'txt',
-          'pdf'
-        ],
+        allowedExtensions: ['txt', 'pdf'],
         withData: true,
       );
 
@@ -50,57 +46,57 @@ class _UploadNotesScreenState
 
         if (file.bytes != null) {
           extractedText =
-              utf8.decode(
-                  file.bytes!);
+              utf8.decode(file.bytes!);
         }
 
         setState(() {});
-      } else {
-        print(
-            "User cancelled file picking");
       }
-    } catch (e) {
-      print(
-          "File pick error: $e");
-    }
-  }
-
-  ////////////////////////////////////////////////////////
-
-  Future<void>
-  generateSummary() async {
-    if (extractedText.isEmpty)
-      return;
-
-    setState(
-            () => isLoading = true);
-
-    try {
-      summary =
-      await _aiService
-          .summarizeText(
-          extractedText);
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(
         const SnackBar(
-          content:
-          Text("Failed to generate summary"),
+          content: Text(
+              "Failed to pick file"),
+        ),
+      );
+    }
+  }
+
+  /////////////////////////////////////////////////////////////
+
+  Future<void> generateSummary() async {
+    if (extractedText.isEmpty)
+      return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      summary =
+      await _aiService.summarizeText(
+        extractedText,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+              "Failed to generate summary"),
         ),
       );
     }
 
-    setState(
-            () => isLoading = false);
+    setState(() {
+      isLoading = false;
+    });
   }
 
-  ////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
-  Future<void>
-  saveSummary() async {
+  Future<void> saveSummary() async {
     final user =
-        FirebaseAuth.instance
-            .currentUser;
+        FirebaseAuth.instance.currentUser;
 
     if (user == null) return;
 
@@ -115,34 +111,34 @@ class _UploadNotesScreenState
       return;
     }
 
-    setState(
-            () => isSaving = true);
+    setState(() {
+      isSaving = true;
+    });
 
     try {
-      await FirebaseFirestore
-          .instance
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .collection(
-          'summaries')
+          .collection('summaries')
           .add({
         "title": fileName,
         "summary": summary,
         "createdAt":
-        FieldValue
-            .serverTimestamp(),
+        FieldValue.serverTimestamp(),
       });
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
         const SnackBar(
-          content:
-          Text("Summary saved successfully"),
+          content: Text(
+              "Summary saved successfully"),
         ),
       );
-    } catch (e) {
-      print("Save error: $e");
 
+      summary = "";
+      extractedText = "";
+      fileName = "";
+    } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(
         const SnackBar(
@@ -152,169 +148,220 @@ class _UploadNotesScreenState
       );
     }
 
-    setState(
-            () => isSaving = false);
+    setState(() {
+      isSaving = false;
+    });
   }
 
-  ////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   @override
-  Widget build(
-      BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-            "Upload Notes"),
+        title:
+        const Text("Upload Notes"),
+        centerTitle: true,
       ),
 
-      body: Padding(
-        padding:
-        const EdgeInsets.all(
-            20),
+      body: SafeArea(
+        child: Padding(
+          padding:
+          const EdgeInsets.all(16),
+          child: Column(
+            children: [
 
-        child: Column(
-          children: [
+              /////////////////////////////////////////////
+              /// STEP TITLE
 
-            ////////////////////////////////////////////////////
-            /// Upload File Button
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: pickFile,
-                child: const Text(
-                    "Upload TXT / PDF File"),
-              ),
-            ),
-
-            const SizedBox(
-                height: 20),
-
-            ////////////////////////////////////////////////////
-            /// File Loaded
-
-            if (extractedText
-                .isNotEmpty)
-              Column(
-                children: [
-
-                  const Text(
-                    "File Loaded Successfully",
-                    style:
-                    TextStyle(
-                      color:
-                      Colors.green,
-                      fontWeight:
-                      FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(
-                      height: 20),
-
-                  ////////////////////////////////////////////////////
-                  /// Generate Summary Button
-
-                  SizedBox(
-                    width:
-                    double.infinity,
-                    height: 50,
-                    child:
-                    ElevatedButton(
-                      onPressed:
-                      generateSummary,
-                      child:
-                      const Text(
-                        "Generate Summary",
-                      ),
-                    ),
-                  ),
-                ],
+              const Text(
+                "Upload your notes and generate a summary",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight:
+                  FontWeight.w500,
+                ),
               ),
 
-            const SizedBox(
-                height: 20),
+              const SizedBox(height: 20),
 
-            ////////////////////////////////////////////////////
-            /// Loading
+              /////////////////////////////////////////////
+              /// UPLOAD BUTTON
 
-            if (isLoading)
-              const CircularProgressIndicator(),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  icon: const Icon(
+                      Icons.upload_file),
+                  label: const Text(
+                    "Upload TXT or PDF",
+                  ),
+                  onPressed: pickFile,
+                ),
+              ),
 
-            ////////////////////////////////////////////////////
-            /// Show Summary
+              const SizedBox(height: 20),
 
-            if (summary.isNotEmpty)
-              Expanded(
-                child:
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+              /////////////////////////////////////////////
+              /// FILE CARD
+
+              if (fileName.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  padding:
+                  const EdgeInsets.all(
+                      16),
+                  decoration:
+                  BoxDecoration(
+                    color: Colors
+                        .green.shade50,
+                    borderRadius:
+                    BorderRadius
+                        .circular(12),
+                    border: Border.all(
+                      color: Colors.green,
+                    ),
+                  ),
+                  child: Row(
                     children: [
-
-                      const Text(
-                        "Summary",
-                        style:
-                        TextStyle(
-                          fontSize:
-                          18,
-                          fontWeight:
-                          FontWeight
-                              .bold,
-                        ),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
                       ),
-
                       const SizedBox(
-                          height:
-                          10),
-
-                      Text(
-                        summary,
-                        style:
-                        const TextStyle(
-                          fontSize:
-                          16,
-                        ),
-                      ),
-
-                      const SizedBox(
-                          height:
-                          20),
-
-                      ////////////////////////////////////////////////////
-                      /// Save Summary Button
-
-                      SizedBox(
-                        width:
-                        double
-                            .infinity,
-                        height: 50,
-                        child:
-                        ElevatedButton.icon(
-                          icon:
-                          const Icon(
-                              Icons
-                                  .save),
-                          label:
-                          isSaving
-                              ? const Text(
-                              "Saving...")
-                              : const Text(
-                              "Save Summary"),
-                          onPressed:
-                          isSaving
-                              ? null
-                              : saveSummary,
+                          width: 10),
+                      Expanded(
+                        child: Text(
+                          fileName,
+                          style:
+                          const TextStyle(
+                            fontWeight:
+                            FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
+              const SizedBox(height: 20),
+
+              /////////////////////////////////////////////
+              /// GENERATE BUTTON
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child:
+                ElevatedButton.icon(
+                  icon: const Icon(
+                      Icons.auto_awesome),
+                  label: const Text(
+                      "Generate Summary"),
+                  onPressed:
+                  extractedText.isEmpty ||
+                      isLoading
+                      ? null
+                      : generateSummary,
+                ),
               ),
-          ],
+
+              const SizedBox(height: 20),
+
+              /////////////////////////////////////////////
+              /// LOADING
+
+              if (isLoading)
+                const Column(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text(
+                        "Generating summary..."),
+                  ],
+                ),
+
+              /////////////////////////////////////////////
+              /// SUMMARY
+
+              if (summary.isNotEmpty)
+                Expanded(
+                  child:
+                  SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+                      children: [
+
+                        const Text(
+                          "Summary",
+                          style:
+                          TextStyle(
+                            fontSize: 18,
+                            fontWeight:
+                            FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(
+                            height: 10),
+
+                        Container(
+                          padding:
+                          const EdgeInsets
+                              .all(16),
+                          decoration:
+                          BoxDecoration(
+                            color: Colors
+                                .grey.shade100,
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                                12),
+                          ),
+                          child: Text(
+                            summary,
+                            style:
+                            const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(
+                            height: 20),
+
+                        /////////////////////////////////////
+                        /// SAVE BUTTON
+
+                        SizedBox(
+                          width: double
+                              .infinity,
+                          height: 52,
+                          child:
+                          ElevatedButton.icon(
+                            icon:
+                            const Icon(
+                                Icons.save),
+                            label: isSaving
+                                ? const Text(
+                                "Saving...")
+                                : const Text(
+                                "Save Summary"),
+                            onPressed: isSaving
+                                ? null
+                                : saveSummary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

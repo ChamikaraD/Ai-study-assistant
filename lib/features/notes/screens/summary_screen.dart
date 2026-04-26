@@ -11,13 +11,17 @@ class SummaryScreen extends StatefulWidget {
   const SummaryScreen({super.key});
 
   @override
-  State<SummaryScreen> createState() => _SummaryScreenState();
+  State<SummaryScreen> createState() =>
+      _SummaryScreenState();
 }
 
-class _SummaryScreenState extends State<SummaryScreen> {
-  final user = FirebaseAuth.instance.currentUser;
+class _SummaryScreenState
+    extends State<SummaryScreen> {
+  final user =
+      FirebaseAuth.instance.currentUser;
 
-  final TextEditingController _searchController =
+  final TextEditingController
+  _searchController =
   TextEditingController();
 
   String searchQuery = "";
@@ -25,25 +29,16 @@ class _SummaryScreenState extends State<SummaryScreen> {
   bool showFavoritesOnly = false;
 
   //////////////////////////////////////////////////////////////
-  /// SHARE SUMMARY
 
   Future<void> _shareSummary(
       String title,
       String summary,
       ) async {
-    final text = """
-$title
-
-$summary
-
-Shared from AI Study Assistant
-""";
-
-    await Share.share(text);
+    await Share.share(
+        "$title\n\n$summary");
   }
 
   //////////////////////////////////////////////////////////////
-  /// TOGGLE FAVORITE
 
   Future<void> _toggleFavorite(
       String docId,
@@ -62,11 +57,9 @@ Shared from AI Study Assistant
   }
 
   //////////////////////////////////////////////////////////////
-  /// DELETE
 
   Future<void> _deleteSummary(
-      String docId,
-      ) async {
+      String docId) async {
     if (user == null) return;
 
     await FirebaseFirestore.instance
@@ -76,7 +69,8 @@ Shared from AI Study Assistant
         .doc(docId)
         .delete();
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
       const SnackBar(
         content: Text("Summary deleted"),
       ),
@@ -84,30 +78,33 @@ Shared from AI Study Assistant
   }
 
   //////////////////////////////////////////////////////////////
-  /// CONFIRM DELETE
 
   Future<bool> _confirmDelete(
-      String docId,
-      ) async {
+      String docId) async {
     final result =
     await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Delete Summary"),
+        title:
+        const Text("Delete Summary"),
         content: const Text(
             "Are you sure you want to delete this summary?"),
         actions: [
           TextButton(
             onPressed: () =>
-                Navigator.pop(context, false),
-            child: const Text("Cancel"),
+                Navigator.pop(
+                    context, false),
+            child:
+            const Text("Cancel"),
           ),
           TextButton(
             onPressed: () =>
-                Navigator.pop(context, true),
+                Navigator.pop(
+                    context, true),
             child: const Text(
               "Delete",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(
+                  color: Colors.red),
             ),
           ),
         ],
@@ -123,17 +120,17 @@ Shared from AI Study Assistant
   }
 
   //////////////////////////////////////////////////////////////
-  /// TIME AGO
 
   String _timeAgo(
-      Timestamp? timestamp,
-      ) {
+      Timestamp? timestamp) {
     if (timestamp == null) return "";
 
-    final date = timestamp.toDate();
+    final date =
+    timestamp.toDate();
 
     final diff =
-    DateTime.now().difference(date);
+    DateTime.now()
+        .difference(date);
 
     if (diff.inMinutes < 60) {
       return "${diff.inMinutes} min ago";
@@ -151,7 +148,6 @@ Shared from AI Study Assistant
   }
 
   //////////////////////////////////////////////////////////////
-  /// OPEN SUMMARY DIALOG
 
   void _openSummaryDialog(
       String docId,
@@ -162,24 +158,19 @@ Shared from AI Study Assistant
       context: context,
       builder: (_) => AlertDialog(
         title: Text(title),
-
-        content: SingleChildScrollView(
+        content:
+        SingleChildScrollView(
           child: Text(summary),
         ),
-
         actions: [
-
-          //////////////////////////////////////
-          /// SHARE
 
           TextButton(
             onPressed: () async {
               await _shareSummary(
-                title,
-                summary,
-              );
+                  title, summary);
             },
-            child: const Text("Share"),
+            child: const Text(
+                "Share"),
           ),
 
           TextButton(
@@ -189,30 +180,28 @@ Shared from AI Study Assistant
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => QuizScreen(
-                    summary: summary,
-                  ),
+                  builder: (_) =>
+                      QuizScreen(
+                        summary: summary,
+                      ),
                 ),
               );
             },
-            child: const Text("Generate Quiz"),
+            child: const Text(
+                "Generate Quiz"),
           ),
-
-          //////////////////////////////////////
-          /// EXPORT PDF
 
           TextButton(
             onPressed: () async {
-              await PdfService.exportSummaryToPdf(
+              await PdfService
+                  .exportSummaryToPdf(
                 title,
                 summary,
               );
             },
-            child: const Text("Export PDF"),
+            child: const Text(
+                "Export PDF"),
           ),
-
-          //////////////////////////////////////
-          /// EDIT
 
           TextButton(
             onPressed: () {
@@ -230,16 +219,15 @@ Shared from AI Study Assistant
                 ),
               );
             },
-            child: const Text("Edit"),
+            child:
+            const Text("Edit"),
           ),
-
-          //////////////////////////////////////
-          /// CLOSE
 
           TextButton(
             onPressed: () =>
                 Navigator.pop(context),
-            child: const Text("Close"),
+            child:
+            const Text("Close"),
           ),
         ],
       ),
@@ -249,74 +237,148 @@ Shared from AI Study Assistant
   //////////////////////////////////////////////////////////////
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context) {
     if (user == null) {
       return const Scaffold(
         body: Center(
-          child: Text("User not logged in"),
+          child: Text(
+              "User not logged in"),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View Summaries"),
-
-        actions: [
-
-          /// FAVORITE FILTER
-
-          IconButton(
-            icon: Icon(
-              showFavoritesOnly
-                  ? Icons.star
-                  : Icons.star_border,
-            ),
-            onPressed: () {
-              setState(() {
-                showFavoritesOnly =
-                !showFavoritesOnly;
-              });
-            },
-          ),
-        ],
+        title:
+        const Text("My Summaries"),
+        centerTitle: true,
       ),
 
       body: Column(
         children: [
 
           //////////////////////////////////////////////////////
-          /// SEARCH BAR
+          /// HEADER
 
-          Padding(
+          Container(
+            width: double.infinity,
             padding:
             const EdgeInsets.all(16),
-            child: TextField(
-              controller:
-              _searchController,
-              onChanged: (value) {
-                setState(() {
-                  searchQuery =
-                      value.toLowerCase();
-                });
-              },
-              decoration:
-              InputDecoration(
-                hintText:
-                "Search summaries...",
-                prefixIcon:
-                const Icon(Icons.search),
-                border:
-                OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(12),
+            color:
+            Colors.blue.shade50,
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment
+                  .start,
+              children: [
+
+                const Text(
+                  "Your Study Summaries",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight:
+                    FontWeight.bold,
+                  ),
                 ),
-              ),
+
+                const SizedBox(
+                    height: 6),
+
+                Text(
+                  showFavoritesOnly
+                      ? "Showing favorite summaries"
+                      : "All saved summaries",
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
 
           //////////////////////////////////////////////////////
-          /// SUMMARY LIST
+          /// SEARCH + FILTER
+
+          Padding(
+            padding:
+            const EdgeInsets.all(16),
+            child: Row(
+              children: [
+
+                Expanded(
+                  child: TextField(
+                    controller:
+                    _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery =
+                            value
+                                .toLowerCase();
+                      });
+                    },
+                    decoration:
+                    InputDecoration(
+                      hintText:
+                      "Search summaries...",
+                      prefixIcon:
+                      const Icon(
+                          Icons.search),
+                      filled: true,
+                      fillColor:
+                      Colors.grey
+                          .shade100,
+                      border:
+                      OutlineInputBorder(
+                        borderRadius:
+                        BorderRadius
+                            .circular(
+                            12),
+                        borderSide:
+                        BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(
+                    width: 10),
+
+                Container(
+                  decoration:
+                  BoxDecoration(
+                    color:
+                    showFavoritesOnly
+                        ? Colors.amber
+                        : Colors
+                        .grey
+                        .shade200,
+                    borderRadius:
+                    BorderRadius
+                        .circular(
+                        10),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      showFavoritesOnly
+                          ? Icons.star
+                          : Icons
+                          .star_border,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        showFavoritesOnly =
+                        !showFavoritesOnly;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          //////////////////////////////////////////////////////
+          /// LIST
 
           Expanded(
             child: StreamBuilder<
@@ -353,16 +415,38 @@ Shared from AI Study Assistant
                     snapshot.data!.docs
                         .isEmpty) {
                   return const Center(
-                    child: Text(
-                        "No summaries yet"),
+                    child: Column(
+                      mainAxisAlignment:
+                      MainAxisAlignment
+                          .center,
+                      children: [
+
+                        Icon(
+                          Icons
+                              .description_outlined,
+                          size: 70,
+                          color: Colors
+                              .grey,
+                        ),
+
+                        SizedBox(
+                            height: 10),
+
+                        Text(
+                          "No summaries yet",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors
+                                .grey,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
 
                 final allDocs =
                     snapshot.data!.docs;
-
-                //////////////////////////////////////////////////////
-                /// FILTER
 
                 final filteredDocs =
                 allDocs.where(
@@ -399,26 +483,12 @@ Shared from AI Study Assistant
                   },
                 ).toList();
 
-                if (filteredDocs
-                    .isEmpty) {
-                  return const Center(
-                    child: Text(
-                        "No results found"),
-                  );
-                }
-
-                //////////////////////////////////////////////////////
-                /// LIST VIEW
-
                 return ListView.builder(
                   padding:
                   const EdgeInsets
                       .all(16),
-
                   itemCount:
-                  filteredDocs
-                      .length,
-
+                  filteredDocs.length,
                   itemBuilder:
                       (context, index) {
 
@@ -449,17 +519,14 @@ Shared from AI Study Assistant
                     return Dismissible(
                       key:
                       ValueKey(doc.id),
-
                       direction:
                       DismissDirection
                           .endToStart,
-
                       confirmDismiss:
                           (direction) async {
                         return await _confirmDelete(
                             doc.id);
                       },
-
                       background:
                       Container(
                         alignment:
@@ -473,20 +540,28 @@ Shared from AI Study Assistant
                         color: Colors.red,
                         child: const Icon(
                           Icons.delete,
-                          color: Colors.white,
-                          size: 30,
+                          color:
+                          Colors.white,
                         ),
                       ),
-
                       child: Card(
+                        elevation: 2,
+                        shape:
+                        RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius
+                              .circular(
+                              12),
+                        ),
                         margin:
                         const EdgeInsets
                             .only(
                           bottom: 12,
                         ),
-
-                        child:
-                        ListTile(
+                        child: ListTile(
+                          contentPadding:
+                          const EdgeInsets
+                              .all(14),
                           leading:
                           const Icon(
                             Icons
@@ -494,51 +569,35 @@ Shared from AI Study Assistant
                             color:
                             Colors.blue,
                           ),
-
-                          title:
-                          Text(title),
-
-                          subtitle:
-                          Text(
+                          title: Text(
+                            title,
+                            style:
+                            const TextStyle(
+                              fontWeight:
+                              FontWeight
+                                  .bold,
+                            ),
+                          ),
+                          subtitle: Text(
                             _timeAgo(
                                 createdAt),
                           ),
-
-                          trailing:
-                          Row(
-                            mainAxisSize:
-                            MainAxisSize.min,
-                            children: [
-
-                              /// FAVORITE
-
-                              IconButton(
-                                icon: Icon(
-                                  isFavorite
-                                      ? Icons.star
-                                      : Icons
-                                      .star_border,
-                                  color:
-                                  Colors
-                                      .amber,
-                                ),
-                                onPressed:
-                                    () {
-                                  _toggleFavorite(
-                                    doc.id,
-                                    isFavorite,
-                                  );
-                                },
-                              ),
-
-                              const Icon(
-                                Icons
-                                    .arrow_forward_ios,
-                                size: 16,
-                              ),
-                            ],
+                          trailing: IconButton(
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.star
+                                  : Icons
+                                  .star_border,
+                              color:
+                              Colors.amber,
+                            ),
+                            onPressed: () {
+                              _toggleFavorite(
+                                doc.id,
+                                isFavorite,
+                              );
+                            },
                           ),
-
                           onTap: () {
                             _openSummaryDialog(
                               doc.id,

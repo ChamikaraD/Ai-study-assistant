@@ -27,6 +27,7 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
   late TextEditingController titleController;
   late TextEditingController summaryController;
 
+  // loading state for save button
   bool isSaving = false;
 
   @override
@@ -39,7 +40,7 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
   }
 
   ////////////////////////////////////////////////////
-
+  /// function to update Firestore
   Future<void> updateSummary() async {
     if (user == null) return;
 
@@ -56,6 +57,7 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
           'updatedAt': FieldValue.serverTimestamp(),
         });
 
+    //stop loading state
     setState(() => isSaving = false);
 
     if (mounted) {
@@ -78,7 +80,7 @@ class _EditSummaryScreenState extends State<EditSummaryScreen> {
         child: Column(
           children: [
             //////////////////////////////////////
-            /// TITLE
+            /// TITLE INPUT FIELD
             TextField(
               controller: titleController,
               decoration: const InputDecoration(

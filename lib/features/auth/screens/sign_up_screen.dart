@@ -47,8 +47,8 @@ class _SignUpScreenState
       ScaffoldMessenger.of(context)
           .showSnackBar(
         const SnackBar(
-          content: Text(
-              "Passwords do not match"),
+          content:
+          Text("Passwords do not match"),
         ),
       );
       return;
@@ -80,17 +80,12 @@ class _SignUpScreenState
           'weak-password') {
         message =
         "Password must be at least 6 characters.";
-      } else if (e.code ==
-          'invalid-email') {
-        message =
-        "Invalid email format.";
       }
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
         SnackBar(
-          content:
-          Text(message),
+          content: Text(message),
         ),
       );
     }
@@ -103,374 +98,344 @@ class _SignUpScreenState
   ////////////////////////////////////////////////////////////
 
   @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  ////////////////////////////////////////////////////////////
-
-  @override
   Widget build(
       BuildContext context) {
     return Scaffold(
-      backgroundColor:
-      const Color(0xFFF5F7FF),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
 
-      body: SafeArea(
-        child:
-        SingleChildScrollView(
-          padding:
-          const EdgeInsets.all(
-              24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
-              children: [
+        //////////////////////////////////////////////////////
+        /// BLUE GRADIENT
 
-                //////////////////////////////////////////////////////
-                /// HEADER
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF2563EB),
+              Color(0xFF1E40AF),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
 
-                Center(
-                  child: Column(
-                    children: [
+        child: SafeArea(
+          child: Column(
+            children: [
 
-                      Image.asset(
-                        "assets/logo.png",
-                        height: 80,
-                      ),
+              //////////////////////////////////////////////////////
+              /// HEADER
 
-                      const SizedBox(
-                          height: 12),
+              const SizedBox(height: 24),
 
-                      const Text(
-                        "Create Account",
-                        style:
-                        TextStyle(
-                          fontSize: 24,
-                          fontWeight:
-                          FontWeight
-                              .bold,
-                        ),
-                      ),
+              Image.asset(
+                "assets/logo.png",
+                height: 110,
+              ),
 
-                      const SizedBox(
-                          height: 6),
+              const SizedBox(height: 12),
 
-                      const Text(
-                        "Start learning smarter with AI",
-                        style:
-                        TextStyle(
-                          color:
-                          Colors.grey,
-                        ),
-                        textAlign:
-                        TextAlign
-                            .center,
-                      ),
-                    ],
-                  ),
+              const Text(
+                "Create Account",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight:
+                  FontWeight.bold,
+                  color: Colors.white,
                 ),
+              ),
 
-                const SizedBox(
-                    height: 40),
+              const SizedBox(height: 6),
 
-                //////////////////////////////////////////////////////
-                /// FULL NAME
-
-                const Text(
-                  "Full Name",
-                  style:
-                  TextStyle(
-                    fontWeight:
-                    FontWeight
-                        .w600,
-                  ),
+              const Text(
+                "Start learning smarter with AI",
+                style: TextStyle(
+                  color: Colors.white70,
                 ),
+              ),
 
-                const SizedBox(
-                    height: 8),
+              const SizedBox(height: 24),
 
-                TextFormField(
-                  controller:
-                  nameController,
+              //////////////////////////////////////////////////////
+              /// FORM CARD
+
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                  const EdgeInsets.all(24),
+
                   decoration:
-                  InputDecoration(
-                    hintText:
-                    "Enter your name",
-                    prefixIcon:
-                    const Icon(
-                      Icons.person_outline,
-                    ),
-                    border:
-                    OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius
-                          .circular(
-                          12),
+                  const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                    BorderRadius.only(
+                      topLeft:
+                      Radius.circular(28),
+                      topRight:
+                      Radius.circular(28),
                     ),
                   ),
-                  validator:
-                      (value) {
-                    if (value ==
-                        null ||
-                        value
-                            .isEmpty) {
-                      return "Enter name";
-                    }
-                    return null;
-                  },
-                ),
 
-                const SizedBox(
-                    height: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
 
-                //////////////////////////////////////////////////////
-                /// EMAIL
+                          //////////////////////////////////////////////////
+                          /// FULL NAME
 
-                const Text(
-                  "Email",
-                  style:
-                  TextStyle(
-                    fontWeight:
-                    FontWeight
-                        .w600,
-                  ),
-                ),
+                          TextFormField(
+                            controller:
+                            nameController,
 
-                const SizedBox(
-                    height: 8),
+                            decoration:
+                            InputDecoration(
+                              hintText:
+                              "Full Name",
 
-                TextFormField(
-                  controller:
-                  emailController,
-                  keyboardType:
-                  TextInputType
-                      .emailAddress,
-                  decoration:
-                  InputDecoration(
-                    hintText:
-                    "Enter your email",
-                    prefixIcon:
-                    const Icon(
-                      Icons.email_outlined,
-                    ),
-                    border:
-                    OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius
-                          .circular(
-                          12),
-                    ),
-                  ),
-                  validator:
-                      (value) {
-                    if (value ==
-                        null ||
-                        value
-                            .isEmpty) {
-                      return "Enter email";
-                    }
-                    return null;
-                  },
-                ),
+                              filled: true,
+                              fillColor:
+                              const Color(
+                                  0xFFF4F5F7),
 
-                const SizedBox(
-                    height: 20),
+                              border:
+                              OutlineInputBorder(
+                                borderRadius:
+                                BorderRadius
+                                    .circular(
+                                    12),
+                                borderSide:
+                                BorderSide.none,
+                              ),
+                            ),
+                          ),
 
-                //////////////////////////////////////////////////////
-                /// PASSWORD
+                          const SizedBox(
+                              height: 16),
 
-                const Text(
-                  "Password",
-                  style:
-                  TextStyle(
-                    fontWeight:
-                    FontWeight
-                        .w600,
-                  ),
-                ),
+                          //////////////////////////////////////////////////
+                          /// EMAIL
 
-                const SizedBox(
-                    height: 8),
+                          TextFormField(
+                            controller:
+                            emailController,
 
-                TextFormField(
-                  controller:
-                  passwordController,
-                  obscureText:
-                  obscurePassword,
-                  decoration:
-                  InputDecoration(
-                    hintText:
-                    "Enter password",
-                    prefixIcon:
-                    const Icon(
-                      Icons.lock_outline,
-                    ),
-                    suffixIcon:
-                    IconButton(
-                      icon: Icon(
-                        obscurePassword
-                            ? Icons
-                            .visibility_off
-                            : Icons
-                            .visibility,
+                            decoration:
+                            InputDecoration(
+                              hintText:
+                              "Email",
+
+                              filled: true,
+                              fillColor:
+                              const Color(
+                                  0xFFF4F5F7),
+
+                              border:
+                              OutlineInputBorder(
+                                borderRadius:
+                                BorderRadius
+                                    .circular(
+                                    12),
+                                borderSide:
+                                BorderSide.none,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                              height: 16),
+
+                          //////////////////////////////////////////////////
+                          /// PASSWORD
+
+                          TextFormField(
+                            controller:
+                            passwordController,
+                            obscureText:
+                            obscurePassword,
+
+                            decoration:
+                            InputDecoration(
+                              hintText:
+                              "Password",
+
+                              filled: true,
+                              fillColor:
+                              const Color(
+                                  0xFFF4F5F7),
+
+                              border:
+                              OutlineInputBorder(
+                                borderRadius:
+                                BorderRadius
+                                    .circular(
+                                    12),
+                                borderSide:
+                                BorderSide.none,
+                              ),
+
+                              suffixIcon:
+                              IconButton(
+                                icon: Icon(
+                                  obscurePassword
+                                      ? Icons
+                                      .visibility_off
+                                      : Icons
+                                      .visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    obscurePassword =
+                                    !obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                              height: 16),
+
+                          //////////////////////////////////////////////////
+                          /// CONFIRM PASSWORD
+
+                          TextFormField(
+                            controller:
+                            confirmPasswordController,
+                            obscureText:
+                            obscureConfirm,
+
+                            decoration:
+                            InputDecoration(
+                              hintText:
+                              "Confirm Password",
+
+                              filled: true,
+                              fillColor:
+                              const Color(
+                                  0xFFF4F5F7),
+
+                              border:
+                              OutlineInputBorder(
+                                borderRadius:
+                                BorderRadius
+                                    .circular(
+                                    12),
+                                borderSide:
+                                BorderSide.none,
+                              ),
+
+                              suffixIcon:
+                              IconButton(
+                                icon: Icon(
+                                  obscureConfirm
+                                      ? Icons
+                                      .visibility_off
+                                      : Icons
+                                      .visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    obscureConfirm =
+                                    !obscureConfirm;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                              height: 24),
+
+                          //////////////////////////////////////////////////
+                          /// BUTTON
+
+                          SizedBox(
+                            width:
+                            double.infinity,
+                            height: 52,
+                            child: ElevatedButton(
+                              style:
+                              ElevatedButton
+                                  .styleFrom(
+                                backgroundColor:
+                                const Color(
+                                    0xFF2563EB),
+
+                                shape:
+                                RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius
+                                      .circular(
+                                      12),
+                                ),
+                              ),
+
+                              onPressed:
+                              isLoading
+                                  ? null
+                                  : _signUp,
+
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                color:
+                                Colors
+                                    .white,
+                              )
+                                  : const Text(
+                                "Create Account",
+                                style:
+                                TextStyle(
+                                  fontSize:
+                                  16,
+                                  fontWeight:
+                                  FontWeight
+                                      .bold,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                              height: 16),
+
+                          //////////////////////////////////////////////////
+                          /// SIGN IN
+
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment
+                                .center,
+                            children: [
+                              const Text(
+                                  "Already have an account?"),
+                              TextButton(
+                                onPressed: () {
+                                  context.go(
+                                      '/signin');
+                                },
+                                child: const Text(
+                                  "Sign In",
+                                  style: TextStyle(
+                                    color: Color(
+                                        0xFF2563EB),
+                                    fontWeight:
+                                    FontWeight
+                                        .bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        setState(() {
-                          obscurePassword =
-                          !obscurePassword;
-                        });
-                      },
-                    ),
-                    border:
-                    OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius
-                          .circular(
-                          12),
-                    ),
-                  ),
-                  validator:
-                      (value) {
-                    if (value ==
-                        null ||
-                        value
-                            .isEmpty) {
-                      return "Enter password";
-                    }
-
-                    if (value.length <
-                        6) {
-                      return "Minimum 6 characters";
-                    }
-
-                    return null;
-                  },
-                ),
-
-                const SizedBox(
-                    height: 20),
-
-                //////////////////////////////////////////////////////
-                /// CONFIRM PASSWORD
-
-                const Text(
-                  "Confirm Password",
-                  style:
-                  TextStyle(
-                    fontWeight:
-                    FontWeight
-                        .w600,
-                  ),
-                ),
-
-                const SizedBox(
-                    height: 8),
-
-                TextFormField(
-                  controller:
-                  confirmPasswordController,
-                  obscureText:
-                  obscureConfirm,
-                  decoration:
-                  InputDecoration(
-                    hintText:
-                    "Confirm password",
-                    prefixIcon:
-                    const Icon(
-                      Icons.lock_outline,
-                    ),
-                    suffixIcon:
-                    IconButton(
-                      icon: Icon(
-                        obscureConfirm
-                            ? Icons
-                            .visibility_off
-                            : Icons
-                            .visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          obscureConfirm =
-                          !obscureConfirm;
-                        });
-                      },
-                    ),
-                    border:
-                    OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius
-                          .circular(
-                          12),
                     ),
                   ),
                 ),
-
-                const SizedBox(
-                    height: 30),
-
-                //////////////////////////////////////////////////////
-                /// CREATE ACCOUNT BUTTON
-
-                SizedBox(
-                  width:
-                  double.infinity,
-                  height: 52,
-                  child:
-                  ElevatedButton(
-                    onPressed:
-                    isLoading
-                        ? null
-                        : _signUp,
-                    child:
-                    isLoading
-                        ? const CircularProgressIndicator(
-                      color:
-                      Colors
-                          .white,
-                    )
-                        : const Text(
-                      "Create Account",
-                      style:
-                      TextStyle(
-                        fontSize:
-                        16,
-                        fontWeight:
-                        FontWeight
-                            .bold,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(
-                    height: 24),
-
-                //////////////////////////////////////////////////////
-                /// SIGN IN
-
-                Center(
-                  child:
-                  TextButton(
-                    onPressed: () {
-                      context.go(
-                          '/signin');
-                    },
-                    child:
-                    const Text(
-                      "Already have an account? Sign In",
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

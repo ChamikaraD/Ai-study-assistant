@@ -1,18 +1,11 @@
 import 'package:ai_study_assistant/features/notes/screens/summary_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../ai/screens/chat_detail_screen.dart';
-import '../history/screens/summary_detail_screen.dart';
-
-import '../notes/screens/note_detail_screen.dart';
-import '../recording/screens/recording_detail_screen.dart';
-import '../settings/screens/settings_screen.dart';
 import '../ai/screens/ask_ai_screen.dart';
 import '../history/screens/study_history_screen.dart';
+import '../settings/screens/settings_screen.dart';
 
 import '../../services/activity_service.dart';
 import '../../models/activity_model.dart';
@@ -27,92 +20,68 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState
     extends State<DashboardScreen> {
-
   int _currentIndex = 0;
 
   /////////////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
-
     final List<Widget> pages = [
-
       _buildHomeContent(),
-
       const StudyHistoryScreen(),
-
       const AskAiScreen(),
-
       const SettingsScreen(),
-
     ];
 
     return Scaffold(
-
-      backgroundColor:
-      AppColors.background,
-
-      appBar: AppBar(
-        title: const Text(
-            "AI Study Assistant"),
-      ),
-
+      backgroundColor: const Color(0xFFF5F7FF),
       body: pages[_currentIndex],
-
-      bottomNavigationBar:
-      BottomNavigationBar(
-
-        currentIndex:
-        _currentIndex,
-
-        selectedItemColor:
-        AppColors.primary,
-
-        type:
-        BottomNavigationBarType
-            .fixed,
-
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-
-        items: const [
-
-          BottomNavigationBarItem(
-            icon: Icon(
-                Icons.home_outlined),
-            label: "Home",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: "History",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(
-                Icons.smart_toy_outlined),
-            label: "Ask AI",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(
-                Icons.settings_outlined),
-            label: "Settings",
-          ),
-
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
   /////////////////////////////////////////////////////////
-  /// HOME CONTENT
+  /// BOTTOM NAV
+
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      selectedItemColor:
+      const Color(0xFF2563EB),
+      type:
+      BottomNavigationBarType.fixed,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          label: "Home",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: "History",
+        ),
+        BottomNavigationBarItem(
+          icon:
+          Icon(Icons.smart_toy_outlined),
+          label: "Ask AI",
+        ),
+        BottomNavigationBarItem(
+          icon:
+          Icon(Icons.settings_outlined),
+          label: "Settings",
+        ),
+      ],
+    );
+  }
+
+  /////////////////////////////////////////////////////////
+  /// HOME
 
   Widget _buildHomeContent() {
-
     final user =
         FirebaseAuth.instance.currentUser;
 
@@ -122,329 +91,298 @@ class _DashboardScreenState
             .first ??
             "Student";
 
-    return SingleChildScrollView(
+    return Column(
+      children: [
+        //////////////////////////////////////////////////////
+        /// HEADER
 
-      padding:
-      const EdgeInsets.all(16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            54,
+            20,
+            18,
+          ),
 
-      child: Column(
-
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-
-        children: [
-
-          ///////////////////////////////////////////////////
-          /// PERSONALIZED GREETING
-
-          Text(
-            "Welcome back, $name 👋",
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight:
-              FontWeight.bold,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF2563EB),
+                Color(0xFF1E40AF),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-          ),
-
-          const SizedBox(height: 6),
-
-          const Text(
-            "Ready to continue learning?",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 14,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
             ),
-          ),
-
-          const SizedBox(height: 20),
-
-          ///////////////////////////////////////////////////
-          /// DASHBOARD GRID
-
-          GridView.count(
-
-            crossAxisCount: 2,
-
-            shrinkWrap: true,
-
-            physics:
-            const NeverScrollableScrollPhysics(),
-
-            crossAxisSpacing: 16,
-
-            mainAxisSpacing: 16,
-
-            children: [
-
-              DashboardCard(
-                icon:
-                Icons.upload_file_outlined,
-                title:
-                "Upload Notes",
-                subtitle:
-                "Add PDFs",
-
-                onTap: () {
-                  context.push(
-                      '/upload-notes');
-                },
-              ),
-
-              DashboardCard(
-                icon:
-                Icons.mic_none_outlined,
-                title:
-                "Record Lecture",
-                subtitle:
-                "Capture audio",
-
-                onTap: () {
-                  context.push(
-                      '/record');
-                },
-              ),
-
-              DashboardCard(
-                icon:
-                Icons.description_outlined,
-                title:
-                "View Summaries",
-                subtitle:
-                "AI results",
-
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                      const SummaryScreen(),
-                    ),
-                  );
-                },
-              ),
-
-              DashboardCard(
-                icon:
-                Icons.chat_bubble_outline,
-                title:
-                "Ask AI",
-                subtitle:
-                "Study help",
-
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                      const AskAiScreen(
-                          mode:
-                          "education"),
-                    ),
-                  );
-                },
-              ),
-
-            ],
-          ),
-
-          const SizedBox(height: 30),
-
-          ///////////////////////////////////////////////////
-          /// RECENT HEADER
-
-          Row(
-
-            mainAxisAlignment:
-            MainAxisAlignment
-                .spaceBetween,
-
-            children: [
-
-              const Text(
-                "Recent Activities",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight:
-                  FontWeight.w600,
-                ),
-              ),
-
-              TextButton(
-
-                onPressed: () {
-                  setState(() {
-                    _currentIndex = 1;
-                  });
-                },
-
-                child:
-                const Text("View All"),
-
-              )
-
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          ///////////////////////////////////////////////////
-          /// RECENT ACTIVITIES
-
-          const RecentActivitiesWidget(),
-
-        ],
-      ),
-    );
-  }
-}
-
-///////////////////////////////////////////////////////////
-/// IMPROVED DASHBOARD CARD
-///////////////////////////////////////////////////////////
-
-class DashboardCard extends StatelessWidget {
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const DashboardCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(
-      BuildContext context) {
-
-    return Material(
-
-      color: Colors.transparent,
-
-      child: InkWell(
-
-        borderRadius:
-        BorderRadius.circular(18),
-
-        onTap: onTap,
-
-        child: AnimatedContainer(
-
-          duration:
-          const Duration(
-              milliseconds: 200),
-
-          padding:
-          const EdgeInsets.all(18),
-
-          decoration:
-          BoxDecoration(
-
-            color: Colors.white,
-
-            borderRadius:
-            BorderRadius.circular(
-                18),
-
-            border: Border.all(
-              color: AppColors.primary
-                  .withOpacity(0.15),
-            ),
-
-            boxShadow: [
-
-              BoxShadow(
-                color: Colors.black
-                    .withOpacity(0.05),
-
-                blurRadius: 8,
-
-                offset:
-                const Offset(0, 4),
-              ),
-
-            ],
           ),
 
           child: Column(
-
-            mainAxisAlignment:
-            MainAxisAlignment.center,
-
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              ///////////////////////////////////////////////////
-              /// ICON
+              /// CENTERED APP TITLE
 
-              Container(
-
-                padding:
-                const EdgeInsets.all(
-                    14),
-
-                decoration:
-                BoxDecoration(
-
-                  color:
-                  AppColors.primary
-                      .withOpacity(
-                      0.1),
-
-                  shape:
-                  BoxShape.circle,
-                ),
-
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color:
-                  AppColors.primary,
+              const Center(
+                child: Text(
+                  "AI Study Assistant",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
                 ),
               ),
 
-              const SizedBox(
-                  height: 14),
+              const SizedBox(height: 14),
 
-              ///////////////////////////////////////////////////
-              /// TITLE
+              /// GREETING
 
-              Text(
-                title,
-                textAlign:
-                TextAlign.center,
-
-                style:
-                const TextStyle(
-                  fontWeight:
-                  FontWeight.w600,
-
-                  fontSize: 16,
+              const Text(
+                "Welcome Back 👋",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
                 ),
               ),
 
-              const SizedBox(
-                  height: 6),
+              const SizedBox(height: 4),
 
-              ///////////////////////////////////////////////////
-              /// SUBTITLE
+              /// USER NAME
 
               Text(
-                subtitle,
-                textAlign:
-                TextAlign.center,
-
-                style:
-                const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ],
           ),
+        ),
+
+        //////////////////////////////////////////////////////
+        /// BODY
+
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+              20,
+              0, // reduced top space
+              20,
+              20,
+            ),
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment
+                  .start,
+              children: [
+                //////////////////////////////////////////////////
+                /// GRID
+
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics:
+                  const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing:
+                  16,
+                  mainAxisSpacing: 16,
+                  children: [
+                    _dashboardCard(
+                      icon:
+                      Icons.upload_file,
+                      title:
+                      "Upload Notes",
+                      subtitle:
+                      "Add PDFs",
+                      onTap: () {
+                        context.push(
+                            '/upload-notes');
+                      },
+                    ),
+                    _dashboardCard(
+                      icon: Icons.mic,
+                      title:
+                      "Record Lecture",
+                      subtitle:
+                      "Capture audio",
+                      onTap: () {
+                        context.push(
+                            '/record');
+                      },
+                    ),
+                    _dashboardCard(
+                      icon:
+                      Icons.description,
+                      title:
+                      "View Summaries",
+                      subtitle:
+                      "AI results",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                            const SummaryScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _dashboardCard(
+                      icon: Icons.chat,
+                      title: "Ask AI",
+                      subtitle:
+                      "Study help",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                            const AskAiScreen(
+                                mode:
+                                "education"),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                    height: 25),
+
+                //////////////////////////////////////////////////
+                /// RECENT HEADER
+
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment
+                      .spaceBetween,
+                  children: [
+                    const Text(
+                      "Recent Activities",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                        FontWeight
+                            .bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentIndex =
+                          1;
+                        });
+                      },
+                      child:
+                      const Text(
+                        "View All",
+                        style: TextStyle(
+                          color: Color(
+                              0xFF2563EB),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                    height: 0),
+
+                const RecentActivitiesWidget(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /////////////////////////////////////////////////////////
+  /// CARD
+
+  Widget _dashboardCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius:
+      BorderRadius.circular(18),
+      onTap: onTap,
+      child: Container(
+        padding:
+        const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+          BorderRadius.circular(
+              18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black
+                  .withOpacity(0.05),
+              blurRadius: 10,
+              offset:
+              const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment:
+          MainAxisAlignment
+              .center,
+          children: [
+            Container(
+              padding:
+              const EdgeInsets.all(
+                  14),
+              decoration:
+              const BoxDecoration(
+                color: Color(
+                    0xFFEAF0FF),
+                shape:
+                BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 30,
+                color:
+                Color(0xFF2563EB),
+              ),
+            ),
+            const SizedBox(
+                height: 14),
+            Text(
+              title,
+              textAlign:
+              TextAlign.center,
+              style:
+              const TextStyle(
+                fontWeight:
+                FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(
+                height: 6),
+            Text(
+              subtitle,
+              style:
+              const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -452,92 +390,56 @@ class DashboardCard extends StatelessWidget {
 }
 
 ///////////////////////////////////////////////////////////
-/// RECENT ACTIVITIES
+/// RECENT ACTIVITIES (FIXED + IMPROVED UI)
 ///////////////////////////////////////////////////////////
 
-class RecentActivitiesWidget
-    extends StatelessWidget {
-
-  const RecentActivitiesWidget(
-      {super.key});
+class RecentActivitiesWidget extends StatelessWidget {
+  const RecentActivitiesWidget({super.key});
 
   @override
-  Widget build(
-      BuildContext context) {
+  Widget build(BuildContext context) {
+    final ActivityService service = ActivityService();
 
-    final ActivityService service =
-    ActivityService();
-
-    return StreamBuilder<
-        List<ActivityModel>>(
-
-      stream:
-      service.streamRecentActivities(),
-
+    return StreamBuilder<List<ActivityModel>>(
+      stream: service.streamRecentActivities(),
       builder: (context, snapshot) {
-
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
-
           return const Center(
-            child:
-            CircularProgressIndicator(),
-          );
-        }
-
-        if (snapshot.hasError) {
-
-          return Text(
-            "Error: ${snapshot.error}",
-            style: const TextStyle(
-                color: Colors.red),
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ),
           );
         }
 
         if (!snapshot.hasData ||
             snapshot.data!.isEmpty) {
-
-          return const Text(
-              "No recent activities");
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              "No recent activities",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+              ),
+            ),
+          );
         }
 
-        final activities =
-        snapshot.data!;
+        final activities = snapshot.data!;
 
         return ListView.builder(
-
           shrinkWrap: true,
-
           physics:
           const NeverScrollableScrollPhysics(),
+          itemCount: activities.length,
+          itemBuilder: (context, index) {
+            final activity = activities[index];
 
-          itemCount:
-          activities.length,
-
-          itemBuilder:
-              (context, index) {
-
-            final activity =
-            activities[index];
-
-            return ActivityTile(
-
-              title:
-              activity.title,
-
-              subtitle:
-              _timeAgo(
-                  activity.createdAt),
-
-              icon:
-              _getIcon(
-                  activity.type),
-
-              onTap: () {
-                _openActivity(
-                    context,
-                    activity);
-              },
+            return _activityCard(
+              context,
+              activity,
             );
           },
         );
@@ -545,205 +447,166 @@ class RecentActivitiesWidget
     );
   }
 
-  /////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  /// ACTIVITY CARD
 
-  void _openActivity(
+  Widget _activityCard(
       BuildContext context,
       ActivityModel activity,
       ) {
-
-    switch (activity.type) {
-
-      case "chat":
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                ChatDetailScreen(
-                  chatId:
-                  activity.id,
-                ),
+    return InkWell(
+      onTap: () {
+        _openActivity(context, activity);
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(
+          bottom: 12,
+        ),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+          BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFE5E7EB),
           ),
-        );
+          boxShadow: [
+            BoxShadow(
+              color:
+              Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
 
-        break;
+        child: Row(
+          children: [
 
-      case "summary":
+            /////////////////////////////////////////////////////
+            /// ICON
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                SummaryDetailScreen(
-                  summaryId:
-                  activity.id,
-                ),
-          ),
-        );
+            Container(
+              padding:
+              const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius:
+                BorderRadius.circular(12),
+              ),
+              child: Icon(
+                _getIcon(activity.type),
+                color:
+                const Color(0xFF2563EB),
+                size: 22,
+              ),
+            ),
 
-        break;
+            const SizedBox(width: 12),
 
-      case "recording":
+            /////////////////////////////////////////////////////
+            /// TEXT
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                RecordingDetailScreen(
-                  recordingId:
-                  activity.id,
-                ),
-          ),
-        );
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
 
-        break;
+                  Text(
+                    activity.title,
+                    style:
+                    const TextStyle(
+                      fontSize: 15,
+                      fontWeight:
+                      FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow:
+                    TextOverflow
+                        .ellipsis,
+                  ),
 
-      case "note":
+                  const SizedBox(height: 4),
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                NoteDetailScreen(
-                  noteId:
-                  activity.id,
-                ),
-          ),
-        );
+                  Text(
+                    activity.timeAgo,
+                    style:
+                    const TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-        break;
-    }
+            /////////////////////////////////////////////////////
+            /// ARROW
+
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  /////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  /// ICON BY TYPE
 
   IconData _getIcon(String type) {
-
     switch (type) {
-
-      case "chat":
-        return Icons.chat;
-
       case "summary":
-        return Icons.description;
+        return Icons.description_outlined;
 
       case "recording":
-        return Icons.mic;
+        return Icons.mic_outlined;
+
+      case "chat":
+        return Icons.chat_bubble_outline;
 
       case "note":
-        return Icons.upload_file;
+        return Icons.insert_drive_file_outlined;
 
       default:
         return Icons.history;
     }
   }
 
-  /////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  /// NAVIGATION (SAFE)
 
-  String _timeAgo(
-      Timestamp timestamp) {
-
-    final date =
-    timestamp.toDate();
-
-    final diff =
-    DateTime.now()
-        .difference(date);
-
-    if (diff.inMinutes < 60) {
-      return "${diff.inMinutes} min ago";
-    }
-
-    if (diff.inHours < 24) {
-      return "${diff.inHours} hours ago";
-    }
-
-    if (diff.inDays == 1) {
-      return "Yesterday";
-    }
-
-    return "${diff.inDays} days ago";
-  }
-}
-
-///////////////////////////////////////////////////////////
-/// ACTIVITY TILE
-///////////////////////////////////////////////////////////
-
-class ActivityTile
-    extends StatelessWidget {
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const ActivityTile({
-
-    super.key,
-
-    required this.title,
-
-    required this.subtitle,
-
-    required this.icon,
-
-    required this.onTap,
-
-  });
-
-  @override
-  Widget build(
-      BuildContext context) {
-
-    return InkWell(
-
-      borderRadius:
-      BorderRadius.circular(14),
-
-      onTap: onTap,
-
-      child: Container(
-
-        margin:
-        const EdgeInsets.only(
-            bottom: 12),
-
-        decoration:
-        BoxDecoration(
-
-          color: Colors.white,
-
-          borderRadius:
-          BorderRadius.circular(14),
-
-          border: Border.all(
-            color: AppColors.primary
-                .withOpacity(0.2),
-          ),
+  void _openActivity(
+      BuildContext context,
+      ActivityModel activity,
+      ) {
+    if (activity.type == "summary") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+          const SummaryScreen(),
         ),
+      );
+    }
 
-        child: ListTile(
+    else if (activity.type == "recording") {
+      Navigator.pushNamed(
+        context,
+        '/record',
+      );
+    }
 
-          leading: Icon(
-            icon,
-            color:
-            AppColors.primary,
-          ),
-
-          title: Text(title),
-
-          subtitle:
-          Text(subtitle),
-
-          trailing:
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-          ),
-        ),
-      ),
-    );
+    else if (activity.type == "chat") {
+      Navigator.pushNamed(
+        context,
+        '/ask-ai',
+      );
+    }
   }
 }

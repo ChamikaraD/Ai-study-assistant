@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ai_study_assistant/services/auth_service.dart';
+import '../../../services/auth_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  State<SettingsScreen> createState() =>
+      _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  final AuthService _authService = AuthService();
+class _SettingsScreenState
+    extends State<SettingsScreen> {
+  final AuthService _authService =
+  AuthService();
 
   String _userName = "User";
   bool _isLoading = true;
@@ -22,8 +25,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadUserData();
   }
 
+  ////////////////////////////////////////////////////////
+
   Future<void> _loadUserData() async {
-    final user = _authService.currentUser;
+    final user =
+        _authService.currentUser;
 
     if (user == null) {
       setState(() {
@@ -33,149 +39,182 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     try {
-      final doc = await FirebaseFirestore.instance
+      final doc =
+      await FirebaseFirestore
+          .instance
           .collection('users')
           .doc(user.uid)
           .get();
 
       if (doc.exists) {
         _userName =
-            doc.data()?['name'] ?? "User";
-      } else {
-        _userName = "User";
+            doc.data()?['name'] ??
+                "User";
       }
 
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
-      print("User load error: $e");
-
       setState(() {
         _isLoading = false;
       });
     }
   }
+
+  ////////////////////////////////////////////////////////
 
   Future<void> _logout() async {
-    try {
-      await _authService.signOut();
-      if (context.mounted) {
-        context.go('/signin');
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Logout failed")),
-      );
+    await _authService.signOut();
+
+    if (context.mounted) {
+      context.go('/signin');
     }
   }
 
+  ////////////////////////////////////////////////////////
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6FF),
+      backgroundColor:
+      const Color(0xFFF4F6FA),
+
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title:
+        const Text("Settings"),
+        centerTitle: true,
       ),
+
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+        child:
+        CircularProgressIndicator(),
+      )
           : SingleChildScrollView(
+        padding:
+        const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height: 40),
 
-            /// Profile Avatar
+            ////////////////////////////////////////////////////
+            /// AVATAR
+
             CircleAvatar(
               radius: 45,
-              backgroundColor: Colors.blue,
+              backgroundColor:
+              Colors.blue,
               child: Text(
-                _userName.isNotEmpty
-                    ? _userName[0].toUpperCase()
+                _userName
+                    .isNotEmpty
+                    ? _userName[0]
+                    .toUpperCase()
                     : "U",
-                style: const TextStyle(
+                style:
+                const TextStyle(
                   fontSize: 32,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  color:
+                  Colors.white,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
               ),
             ),
 
             const SizedBox(height: 12),
 
-            /// Dynamic Username
+            ////////////////////////////////////////////////////
+            /// USERNAME
+
             Text(
-              "Hi $_userName",
-              style: const TextStyle(
+              _userName,
+              style:
+              const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontWeight:
+                FontWeight.w600,
               ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  _buildSettingsTile(
-                    icon: Icons.language,
-                    title: 'Language',
-                    trailingText: 'English',
-                    onTap: () => context.push('/language'),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildSettingsTile(
-                    icon: Icons.shield_outlined,
-                    title: 'Privacy',
-                    onTap: () => context.push('/privacy'),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildSettingsTile(
-                    icon: Icons.description_outlined,
-                    title: 'Terms & Conditions',
-                    onTap: () => context.push('/terms'),
-                  ),
-                  const SizedBox(height: 20),
+            ////////////////////////////////////////////////////
+            /// SETTINGS CARDS
 
-                  /// Logout Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: OutlinedButton(
-                      onPressed: _logout,
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                          color: Colors.red,
-                          width: 1,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Logout',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
+            _settingsCard(
+              icon:
+              Icons.language,
+              title: "Language",
+              subtitle:
+              "English",
+              onTap: () =>
+                  context.push(
+                      '/language'),
+            ),
+
+            const SizedBox(height: 12),
+
+            _settingsCard(
+              icon:
+              Icons
+                  .shield_outlined,
+              title: "Privacy",
+              onTap: () =>
+                  context.push(
+                      '/privacy'),
+            ),
+
+            const SizedBox(height: 12),
+
+            _settingsCard(
+              icon: Icons
+                  .description_outlined,
+              title:
+              "Terms & Conditions",
+              onTap: () =>
+                  context.push(
+                      '/terms'),
+            ),
+
+            const SizedBox(height: 30),
+
+            ////////////////////////////////////////////////////
+            /// LOGOUT BUTTON
+
+            SizedBox(
+              width:
+              double.infinity,
+              height: 52,
+              child:
+              ElevatedButton(
+                onPressed:
+                _logout,
+                style:
+                ElevatedButton
+                    .styleFrom(
+                  backgroundColor:
+                  Colors.red,
+                  shape:
+                  RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius
+                        .circular(
+                        12),
                   ),
-                ],
+                ),
+                child:
+                const Text(
+                  "Logout",
+                  style:
+                  TextStyle(
+                    fontSize:
+                    16,
+                    fontWeight:
+                    FontWeight
+                        .bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -184,52 +223,115 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSettingsTile({
+  ////////////////////////////////////////////////////////
+
+  Widget _settingsCard({
     required IconData icon,
     required String title,
-    String? trailingText,
+    String? subtitle,
     required VoidCallback onTap,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFD6E4FF),
-          width: 1.2,
-        ),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: Colors.black54),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+    return InkWell(
+      onTap: onTap,
+      borderRadius:
+      BorderRadius.circular(14),
+      child: Container(
+        padding:
+        const EdgeInsets.all(16),
+        decoration:
+        BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+          BorderRadius.circular(14),
+          border: Border.all(
+            color:
+            const Color(
+                0xFFE5E7EB),
           ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (trailingText != null) ...[
-              Text(
-                trailingText,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.grey,
-              size: 14,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black
+                  .withOpacity(0.04),
+              blurRadius: 10,
+              offset:
+              const Offset(0, 4),
             ),
           ],
         ),
-        onTap: onTap,
+        child: Row(
+          children: [
+
+            ////////////////////////////////////////
+            /// ICON
+
+            Container(
+              padding:
+              const EdgeInsets
+                  .all(10),
+              decoration:
+              BoxDecoration(
+                color:
+                Colors.blue
+                    .shade50,
+                borderRadius:
+                BorderRadius
+                    .circular(
+                    10),
+              ),
+              child: Icon(
+                icon,
+                color:
+                Colors.blue,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            ////////////////////////////////////////
+            /// TEXT
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment
+                    .start,
+                children: [
+
+                  Text(
+                    title,
+                    style:
+                    const TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                      FontWeight
+                          .w600,
+                    ),
+                  ),
+
+                  if (subtitle != null)
+                    Text(
+                      subtitle,
+                      style:
+                      const TextStyle(
+                        color:
+                        Colors.grey,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            ////////////////////////////////////////
+            /// ARROW
+
+            const Icon(
+              Icons
+                  .arrow_forward_ios,
+              size: 16,
+              color: Colors.grey,
+            ),
+          ],
+        ),
       ),
     );
   }

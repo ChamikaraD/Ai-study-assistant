@@ -25,10 +25,9 @@ class _SummaryScreenState
   TextEditingController();
 
   String searchQuery = "";
-
   bool showFavoritesOnly = false;
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   Future<void> _shareSummary(
       String title,
@@ -38,7 +37,7 @@ class _SummaryScreenState
         "$title\n\n$summary");
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   Future<void> _toggleFavorite(
       String docId,
@@ -56,7 +55,7 @@ class _SummaryScreenState
     });
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   Future<void> _deleteSummary(
       String docId) async {
@@ -77,7 +76,7 @@ class _SummaryScreenState
     );
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   Future<bool> _confirmDelete(
       String docId) async {
@@ -119,7 +118,7 @@ class _SummaryScreenState
     return false;
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   String _timeAgo(
       Timestamp? timestamp) {
@@ -147,94 +146,226 @@ class _SummaryScreenState
     return "${diff.inDays} days ago";
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
+  /// POPUP SUMMARY WITH ICONS
 
   void _openSummaryDialog(
       String docId,
       String title,
       String summary,
+      bool isFavorite,
       ) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content:
-        SingleChildScrollView(
-          child: Text(summary),
+      builder: (_) => Dialog(
+        shape:
+        RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.circular(16),
         ),
-        actions: [
+        child: Padding(
+          padding:
+          const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize:
+            MainAxisSize.min,
+            children: [
 
-          TextButton(
-            onPressed: () async {
-              await _shareSummary(
-                  title, summary);
-            },
-            child: const Text(
-                "Share"),
-          ),
+              //////////////////////////////////////////////////////
+              /// TITLE
 
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      QuizScreen(
-                        summary: summary,
-                      ),
-                ),
-              );
-            },
-            child: const Text(
-                "Generate Quiz"),
-          ),
-
-          TextButton(
-            onPressed: () async {
-              await PdfService
-                  .exportSummaryToPdf(
+              Text(
                 title,
-                summary,
-              );
-            },
-            child: const Text(
-                "Export PDF"),
-          ),
-
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      EditSummaryScreen(
-                        docId: docId,
-                        title: title,
-                        summary: summary,
-                      ),
+                style:
+                const TextStyle(
+                  fontSize: 18,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
-              );
-            },
-            child:
-            const Text("Edit"),
-          ),
+              ),
 
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(context),
-            child:
-            const Text("Close"),
+              const SizedBox(height: 12),
+
+              //////////////////////////////////////////////////////
+              /// SUMMARY
+
+              Container(
+                constraints:
+                const BoxConstraints(
+                  maxHeight: 300,
+                ),
+                child:
+                SingleChildScrollView(
+                  child: Text(
+                    summary,
+                    style:
+                    const TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              //////////////////////////////////////////////////////
+              /// ICON ACTIONS
+
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment
+                    .spaceEvenly,
+                children: [
+
+                  _dialogIcon(
+                    icon: isFavorite
+                        ? Icons.favorite
+                        : Icons
+                        .favorite_border,
+                    label: "Favorite",
+                    onTap: () {
+                      _toggleFavorite(
+                        docId,
+                        isFavorite,
+                      );
+                      Navigator.pop(
+                          context);
+                    },
+                  ),
+
+                  _dialogIcon(
+                    icon: Icons.share,
+                    label: "Share",
+                    onTap: () {
+                      _shareSummary(
+                        title,
+                        summary,
+                      );
+                    },
+                  ),
+
+                  _dialogIcon(
+                    icon: Icons.quiz,
+                    label: "Quiz",
+                    onTap: () {
+                      Navigator.pop(
+                          context);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              QuizScreen(
+                                summary:
+                                summary,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _dialogIcon(
+                    icon:
+                    Icons.picture_as_pdf,
+                    label: "PDF",
+                    onTap: () async {
+                      await PdfService
+                          .exportSummaryToPdf(
+                        title,
+                        summary,
+                      );
+                    },
+                  ),
+
+                  _dialogIcon(
+                    icon: Icons.edit,
+                    label: "Edit",
+                    onTap: () {
+                      Navigator.pop(
+                          context);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              EditSummaryScreen(
+                                docId:
+                                docId,
+                                title:
+                                title,
+                                summary:
+                                summary,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              //////////////////////////////////////////////////////
+              /// CLOSE BUTTON
+
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () =>
+                      Navigator.pop(
+                          context),
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color:
+                      Colors.blue,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /////////////////////////////////////////////////////////////
+  /// ICON WIDGET
+
+  Widget _dialogIcon({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius:
+      BorderRadius.circular(10),
+      child: Column(
+        mainAxisSize:
+        MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: Colors.blue,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style:
+            const TextStyle(
+              fontSize: 12,
+            ),
           ),
         ],
       ),
     );
   }
 
-  //////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   @override
   Widget build(
@@ -259,121 +390,43 @@ class _SummaryScreenState
         children: [
 
           //////////////////////////////////////////////////////
-          /// HEADER
-
-          Container(
-            width: double.infinity,
-            padding:
-            const EdgeInsets.all(16),
-            color:
-            Colors.blue.shade50,
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
-              children: [
-
-                const Text(
-                  "Your Study Summaries",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight:
-                    FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(
-                    height: 6),
-
-                Text(
-                  showFavoritesOnly
-                      ? "Showing favorite summaries"
-                      : "All saved summaries",
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          //////////////////////////////////////////////////////
-          /// SEARCH + FILTER
+          /// SEARCH
 
           Padding(
             padding:
-            const EdgeInsets.all(16),
-            child: Row(
-              children: [
-
-                Expanded(
-                  child: TextField(
-                    controller:
-                    _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery =
-                            value
-                                .toLowerCase();
-                      });
-                    },
-                    decoration:
-                    InputDecoration(
-                      hintText:
-                      "Search summaries...",
-                      prefixIcon:
-                      const Icon(
-                          Icons.search),
-                      filled: true,
-                      fillColor:
-                      Colors.grey
-                          .shade100,
-                      border:
-                      OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius
-                            .circular(
-                            12),
-                        borderSide:
-                        BorderSide.none,
-                      ),
-                    ),
-                  ),
+            const EdgeInsets.all(
+                16),
+            child: TextField(
+              controller:
+              _searchController,
+              onChanged: (value) {
+                setState(() {
+                  searchQuery =
+                      value
+                          .toLowerCase();
+                });
+              },
+              decoration:
+              InputDecoration(
+                hintText:
+                "Search summaries...",
+                prefixIcon:
+                const Icon(
+                    Icons.search),
+                filled: true,
+                fillColor:
+                Colors.grey
+                    .shade100,
+                border:
+                OutlineInputBorder(
+                  borderRadius:
+                  BorderRadius
+                      .circular(
+                      12),
+                  borderSide:
+                  BorderSide.none,
                 ),
-
-                const SizedBox(
-                    width: 10),
-
-                Container(
-                  decoration:
-                  BoxDecoration(
-                    color:
-                    showFavoritesOnly
-                        ? Colors.amber
-                        : Colors
-                        .grey
-                        .shade200,
-                    borderRadius:
-                    BorderRadius
-                        .circular(
-                        10),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      showFavoritesOnly
-                          ? Icons.star
-                          : Icons
-                          .star_border,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showFavoritesOnly =
-                        !showFavoritesOnly;
-                      });
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
 
@@ -411,89 +464,29 @@ class _SummaryScreenState
                   );
                 }
 
-                if (!snapshot.hasData ||
+                if (!snapshot
+                    .hasData ||
                     snapshot.data!.docs
                         .isEmpty) {
                   return const Center(
-                    child: Column(
-                      mainAxisAlignment:
-                      MainAxisAlignment
-                          .center,
-                      children: [
-
-                        Icon(
-                          Icons
-                              .description_outlined,
-                          size: 70,
-                          color: Colors
-                              .grey,
-                        ),
-
-                        SizedBox(
-                            height: 10),
-
-                        Text(
-                          "No summaries yet",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors
-                                .grey,
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: Text(
+                        "No summaries yet"),
                   );
                 }
 
-                final allDocs =
+                final docs =
                     snapshot.data!.docs;
-
-                final filteredDocs =
-                allDocs.where(
-                      (doc) {
-                    final data =
-                    doc.data()
-                    as Map<
-                        String,
-                        dynamic>;
-
-                    final title =
-                        data['title']
-                            ?.toLowerCase() ??
-                            "";
-
-                    final summary =
-                        data['summary']
-                            ?.toLowerCase() ??
-                            "";
-
-                    final isFavorite =
-                        data['isFavorite'] ??
-                            false;
-
-                    if (showFavoritesOnly &&
-                        !isFavorite) {
-                      return false;
-                    }
-
-                    return title.contains(
-                        searchQuery) ||
-                        summary.contains(
-                            searchQuery);
-                  },
-                ).toList();
 
                 return ListView.builder(
                   padding:
                   const EdgeInsets
                       .all(16),
                   itemCount:
-                  filteredDocs.length,
+                  docs.length,
                   itemBuilder:
                       (context, index) {
-
                     final doc =
-                    filteredDocs[index];
+                    docs[index];
 
                     final data =
                     doc.data()
@@ -516,96 +509,53 @@ class _SummaryScreenState
                         data['isFavorite'] ??
                             false;
 
-                    return Dismissible(
-                      key:
-                      ValueKey(doc.id),
-                      direction:
-                      DismissDirection
-                          .endToStart,
-                      confirmDismiss:
-                          (direction) async {
-                        return await _confirmDelete(
-                            doc.id);
-                      },
-                      background:
-                      Container(
-                        alignment:
-                        Alignment
-                            .centerRight,
-                        padding:
-                        const EdgeInsets
-                            .symmetric(
-                          horizontal: 20,
-                        ),
-                        color: Colors.red,
-                        child: const Icon(
-                          Icons.delete,
+                    return Card(
+                      margin:
+                      const EdgeInsets
+                          .only(
+                          bottom:
+                          12),
+                      child: ListTile(
+                        leading:
+                        const Icon(
+                          Icons
+                              .description,
                           color:
-                          Colors.white,
+                          Colors.blue,
                         ),
-                      ),
-                      child: Card(
-                        elevation: 2,
-                        shape:
-                        RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius
-                              .circular(
-                              12),
+                        title:
+                        Text(title),
+                        subtitle:
+                        Text(
+                          _timeAgo(
+                              createdAt),
                         ),
-                        margin:
-                        const EdgeInsets
-                            .only(
-                          bottom: 12,
-                        ),
-                        child: ListTile(
-                          contentPadding:
-                          const EdgeInsets
-                              .all(14),
-                          leading:
-                          const Icon(
-                            Icons
-                                .description,
+                        trailing:
+                        IconButton(
+                          icon: Icon(
+                            isFavorite
+                                ? Icons
+                                .star
+                                : Icons
+                                .star_border,
                             color:
-                            Colors.blue,
+                            Colors.amber,
                           ),
-                          title: Text(
-                            title,
-                            style:
-                            const TextStyle(
-                              fontWeight:
-                              FontWeight
-                                  .bold,
-                            ),
-                          ),
-                          subtitle: Text(
-                            _timeAgo(
-                                createdAt),
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.star
-                                  : Icons
-                                  .star_border,
-                              color:
-                              Colors.amber,
-                            ),
-                            onPressed: () {
-                              _toggleFavorite(
-                                doc.id,
-                                isFavorite,
-                              );
-                            },
-                          ),
-                          onTap: () {
-                            _openSummaryDialog(
+                          onPressed: () {
+                            _toggleFavorite(
                               doc.id,
-                              title,
-                              summary,
+                              isFavorite,
                             );
                           },
                         ),
+                        onTap: () {
+                          _openSummaryDialog(
+                            doc.id,
+                            title,
+                            summary,
+                            isFavorite,
+                          );
+                        },
                       ),
                     );
                   },

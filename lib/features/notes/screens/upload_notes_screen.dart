@@ -55,8 +55,8 @@ class _UploadNotesScreenState
       ScaffoldMessenger.of(context)
           .showSnackBar(
         const SnackBar(
-          content: Text(
-              "Failed to pick file"),
+          content:
+          Text("Failed to pick file"),
         ),
       );
     }
@@ -72,20 +72,10 @@ class _UploadNotesScreenState
       isLoading = true;
     });
 
-    try {
-      summary =
-      await _aiService.summarizeText(
-        extractedText,
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-              "Failed to generate summary"),
-        ),
-      );
-    }
+    summary =
+    await _aiService.summarizeText(
+      extractedText,
+    );
 
     setState(() {
       isLoading = false;
@@ -100,53 +90,30 @@ class _UploadNotesScreenState
 
     if (user == null) return;
 
-    if (summary.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content:
-          Text("No summary to save"),
-        ),
-      );
-      return;
-    }
+    if (summary.isEmpty) return;
 
     setState(() {
       isSaving = true;
     });
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('summaries')
-          .add({
-        "title": fileName,
-        "summary": summary,
-        "createdAt":
-        FieldValue.serverTimestamp(),
-      });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('summaries')
+        .add({
+      "title": fileName,
+      "summary": summary,
+      "createdAt":
+      FieldValue.serverTimestamp(),
+    });
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-              "Summary saved successfully"),
-        ),
-      );
-
-      summary = "";
-      extractedText = "";
-      fileName = "";
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content:
-          Text("Failed to save summary"),
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content:
+        Text("Summary saved"),
+      ),
+    );
 
     setState(() {
       isSaving = false;
@@ -167,123 +134,191 @@ class _UploadNotesScreenState
       body: SafeArea(
         child: Padding(
           padding:
-          const EdgeInsets.all(16),
+          const EdgeInsets.all(20),
           child: Column(
             children: [
 
-              /////////////////////////////////////////////
-              /// STEP TITLE
+              //////////////////////////////////////////////////////
+              /// UPLOAD BOX
 
-              const Text(
-                "Upload your notes and generate a summary",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight:
-                  FontWeight.w500,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              /////////////////////////////////////////////
-              /// UPLOAD BUTTON
-
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  icon: const Icon(
-                      Icons.upload_file),
-                  label: const Text(
-                    "Upload TXT or PDF",
-                  ),
-                  onPressed: pickFile,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              /////////////////////////////////////////////
-              /// FILE CARD
-
-              if (fileName.isNotEmpty)
-                Container(
+              GestureDetector(
+                onTap: pickFile,
+                child: Container(
                   width: double.infinity,
                   padding:
-                  const EdgeInsets.all(
-                      16),
+                  const EdgeInsets
+                      .symmetric(
+                    vertical: 40,
+                    horizontal: 20,
+                  ),
+
                   decoration:
                   BoxDecoration(
-                    color: Colors
-                        .green.shade50,
                     borderRadius:
                     BorderRadius
-                        .circular(12),
+                        .circular(
+                        16),
+
                     border: Border.all(
-                      color: Colors.green,
+                      color: Colors
+                          .grey
+                          .shade400,
+                      width: 1.5,
                     ),
                   ),
-                  child: Row(
+
+                  child: Column(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
+
+                      Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 60,
+                        color: Colors
+                            .grey
+                            .shade600,
                       ),
+
                       const SizedBox(
-                          width: 10),
-                      Expanded(
-                        child: Text(
-                          fileName,
-                          style:
-                          const TextStyle(
-                            fontWeight:
-                            FontWeight.bold,
+                          height: 16),
+
+                      const Text(
+                        "Drag & drop your file here",
+                        style:
+                        TextStyle(
+                          fontSize: 16,
+                          fontWeight:
+                          FontWeight
+                              .w600,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 6),
+
+                      const Text(
+                        "or",
+                        style:
+                        TextStyle(
+                          color:
+                          Colors.grey,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 16),
+
+                      //////////////////////////////////////////////////////
+                      /// SELECT BUTTON
+
+                      ElevatedButton(
+                        onPressed: pickFile,
+                        style:
+                        ElevatedButton
+                            .styleFrom(
+                          backgroundColor:
+                          const Color(
+                              0xFF2563EB),
+
+                          padding:
+                          const EdgeInsets
+                              .symmetric(
+                            horizontal: 24,
+                            vertical: 12,
                           ),
+
+                          shape:
+                          RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                                10),
+                          ),
+                        ),
+                        child:
+                        const Text(
+                          "Select File",
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 16),
+
+                      Text(
+                        "Supported formats",
+                        style:
+                        TextStyle(
+                          color: Colors
+                              .grey
+                              .shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 4),
+
+                      const Text(
+                        ".txt, .pdf",
+                        style:
+                        TextStyle(
+                          fontSize: 12,
+                          fontWeight:
+                          FontWeight
+                              .w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-
-              const SizedBox(height: 20),
-
-              /////////////////////////////////////////////
-              /// GENERATE BUTTON
-
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child:
-                ElevatedButton.icon(
-                  icon: const Icon(
-                      Icons.auto_awesome),
-                  label: const Text(
-                      "Generate Summary"),
-                  onPressed:
-                  extractedText.isEmpty ||
-                      isLoading
-                      ? null
-                      : generateSummary,
-                ),
               ),
 
               const SizedBox(height: 20),
 
-              /////////////////////////////////////////////
-              /// LOADING
+              //////////////////////////////////////////////////////
+              /// FILE NAME
 
-              if (isLoading)
-                const Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
-                    Text(
-                        "Generating summary..."),
-                  ],
+              if (fileName.isNotEmpty)
+                Text(
+                  fileName,
+                  style:
+                  const TextStyle(
+                    fontWeight:
+                    FontWeight.bold,
+                  ),
                 ),
 
-              /////////////////////////////////////////////
+              const SizedBox(height: 20),
+
+              //////////////////////////////////////////////////////
+              /// GENERATE BUTTON
+
+              if (extractedText
+                  .isNotEmpty)
+                SizedBox(
+                  width:
+                  double.infinity,
+                  height: 50,
+                  child:
+                  ElevatedButton(
+                    onPressed:
+                    isLoading
+                        ? null
+                        : generateSummary,
+                    child: isLoading
+                        ? const CircularProgressIndicator(
+                      color:
+                      Colors
+                          .white,
+                    )
+                        : const Text(
+                      "Generate Summary",
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 20),
+
+              //////////////////////////////////////////////////////
               /// SUMMARY
 
               if (summary.isNotEmpty)
@@ -302,7 +337,8 @@ class _UploadNotesScreenState
                           TextStyle(
                             fontSize: 18,
                             fontWeight:
-                            FontWeight.bold,
+                            FontWeight
+                                .bold,
                           ),
                         ),
 
@@ -316,7 +352,8 @@ class _UploadNotesScreenState
                           decoration:
                           BoxDecoration(
                             color: Colors
-                                .grey.shade100,
+                                .grey
+                                .shade100,
                             borderRadius:
                             BorderRadius
                                 .circular(
@@ -324,36 +361,26 @@ class _UploadNotesScreenState
                           ),
                           child: Text(
                             summary,
-                            style:
-                            const TextStyle(
-                              fontSize: 16,
-                            ),
                           ),
                         ),
 
                         const SizedBox(
                             height: 20),
 
-                        /////////////////////////////////////
-                        /// SAVE BUTTON
-
                         SizedBox(
                           width: double
                               .infinity,
-                          height: 52,
+                          height: 50,
                           child:
-                          ElevatedButton.icon(
-                            icon:
-                            const Icon(
-                                Icons.save),
-                            label: isSaving
-                                ? const Text(
-                                "Saving...")
-                                : const Text(
-                                "Save Summary"),
-                            onPressed: isSaving
+                          ElevatedButton(
+                            onPressed:
+                            isSaving
                                 ? null
                                 : saveSummary,
+                            child:
+                            const Text(
+                              "Save Summary",
+                            ),
                           ),
                         ),
                       ],

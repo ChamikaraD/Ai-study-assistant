@@ -48,4 +48,23 @@ class ActivityModel {
       createdAt: data['createdAt'],
     );
   }
+  String get timeAgo {
+    final date = createdAt.toDate();
+
+    final diff = DateTime.now().difference(date);
+
+    if (diff.inMinutes < 60) {
+      return "${diff.inMinutes} min ago";
+    }
+
+    if (diff.inHours < 24) {
+      return "${diff.inHours} hours ago";
+    }
+
+    if (diff.inDays == 1) {
+      return "Yesterday";
+    }
+
+    return "${diff.inDays} days ago";
+  }
 }

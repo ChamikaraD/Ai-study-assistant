@@ -1,51 +1,111 @@
-name: AI Study Assistant
+# 📱 AI Study Assistant (Android)
 
-description: >
-  A mobile-first AI-powered study assistant built with Flutter and FastAPI.
-  Designed for Android users to upload notes, record lectures, and generate
-  smart summaries with contextual Q&A.
+An AI-powered study companion mobile application built using **Flutter** and **FastAPI**, designed specifically for **Android devices**. This app helps students efficiently manage notes, convert lectures to text, and generate smart summaries using AI.
 
-platform: Android
+---
 
-features:
-  - Upload notes (PDF, TXT)
-  - Record lectures (speech-to-text)
-  - AI-generated summaries
-  - Context-based question answering
-  - Study history tracking
+## 🚀 Features
 
-tech_stack:
-  frontend: Flutter
-  backend: FastAPI
-  ai_services:
-    - OpenAI
-    - Whisper
-  database:
-    - Firebase
+- 📄 **Upload Notes**  
+  Supports PDF and TXT file uploads for easy study material management.
 
-architecture: >
-  Flutter (Android App) → FastAPI Backend → AI Models → Firebase Storage
+- 🎤 **Lecture Recording (Speech-to-Text)**  
+  Record lectures and automatically convert speech into text.
 
-project_structure:
-  lib:
-    core: Shared utilities and constants
-    features: Feature-based modules
-    models: Data models
-    routes: Navigation handling
-    services: API and backend services
-    widgets: Reusable UI components
-  main: Entry point of application
+- 🤖 **AI Summarization**  
+  Generate concise summaries from long notes using AI.
 
-setup:
-  prerequisites:
-    - Flutter SDK
-    - Android Studio
-    - Firebase project
-  steps:
-    - Clone repository
-    - Run "flutter pub get"
-    - Configure Firebase
-    - Run "flutter run"
+- ❓ **Context-Based Q&A**  
+  Ask questions from your uploaded notes and get accurate answers.
 
-build:
-  command: flutter build apk
+- 🕘 **Study History**  
+  Keep track of previously uploaded notes and generated summaries.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend (Mobile)
+- Flutter (Android only)
+- Dart
+
+### Backend
+- FastAPI
+- Python
+
+### AI Services
+- OpenAI API / Whisper (Speech-to-Text)
+
+### Database
+- Firebase / Supabase
+
+---
+
+## 📂 Project Structure
+
+```
+lib/
+│
+├── core/        # Core utilities and constants
+├── features/    # Feature-based modules (notes, recording, etc.)
+├── models/      # Data models
+├── routes/      # Navigation routes
+├── services/    # API and backend services
+├── widgets/     # Reusable UI components
+│
+├── app.dart     # App configuration
+└── main.dart    # Entry point
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+- Flutter SDK installed
+- Android Studio or VS Code
+- Android device or emulator
+
+### Steps
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/your-username/ai-study-assistant.git
+cd ai-study-assistant
+```
+
+2. **Install dependencies**
+```bash
+flutter pub get
+```
+
+3. **Run the app (Android only)**
+```bash
+flutter run
+```
+
+---
+
+## 📱 Platform Support
+
+- Android  
+
+---
+
+## 🔐 Configuration
+
+- Add your Firebase configuration in:
+  ```
+  firebase.json
+  ```
+
+- Set up your API keys (OpenAI / backend) securely in your project.
+
+---
+
+## 🧠 How It Works
+
+1. User uploads notes or records lectures  
+2. Data is sent to FastAPI backend  
+3. AI processes content (summarization / Q&A)  
+4. Results are displayed in the mobile app  

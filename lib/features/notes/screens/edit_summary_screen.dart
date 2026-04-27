@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Screen to edit an existing summary
+/// NOTE: This screen is currently only used for summaries, not notes. The Firestore path is hardcoded to 'summaries'.
 class EditSummaryScreen extends StatefulWidget {
   final String docId;
   final String title;

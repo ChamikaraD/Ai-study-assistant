@@ -9,7 +9,7 @@ class QuizResultScreen extends StatelessWidget {
     required this.score,
     required this.total,
   });
-
+/////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,6 +21,8 @@ class QuizResultScreen extends StatelessWidget {
           mainAxisAlignment:
           MainAxisAlignment.center,
           children: [
+
+/////////////////////////////////////////////////////////////
 
             const Icon(
               Icons.emoji_events,
@@ -47,7 +49,7 @@ class QuizResultScreen extends StatelessWidget {
                 FontWeight.bold,
               ),
             ),
-
+/////////////////////////////////////////////////
             const SizedBox(height: 20),
 
             ElevatedButton(

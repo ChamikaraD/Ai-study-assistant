@@ -9,12 +9,16 @@ class NoteDetailScreen extends StatelessWidget {
   const NoteDetailScreen({super.key, required this.noteId});
 
   @override
+  // Get currently logged-in user
+  // NOTE: Assumes user is always logged in (null check not handled safely)
   Widget build(BuildContext context) {
     // Get currently logged-in user
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      // App bar with static title
       appBar: AppBar(title: const Text("Note")),
+      // FutureBuilder is used to fetch note data asynchronously from Firestore
       body: FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('users')
@@ -27,6 +31,8 @@ class NoteDetailScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Extract document data and cast to Map
+          // ⚠️ Potential crash if document doesn't exist or data is null
           final data = snapshot.data!.data() as Map<String, dynamic>;
 
           return Padding(

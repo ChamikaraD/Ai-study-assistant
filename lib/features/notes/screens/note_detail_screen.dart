@@ -31,8 +31,8 @@ class NoteDetailScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Extract document data and cast to Map
-          // ⚠️ Potential crash if document doesn't exist or data is null
+          //   Extract document data and cast to Map
+          //    Potential crash if document doesn't exist or data is null
           final data = snapshot.data!.data() as Map<String, dynamic>;
 
           return Padding(

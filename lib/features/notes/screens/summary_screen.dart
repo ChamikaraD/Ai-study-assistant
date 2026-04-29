@@ -22,13 +22,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
   String searchQuery = "";
   bool showFavoritesOnly = false;
 
-  /////////////////////////////////////////////////////////////
-
   Future<void> _shareSummary(String title, String summary) async {
     await Share.share("$title\n\n$summary");
   }
-
-  /////////////////////////////////////////////////////////////
 
   Future<void> _toggleFavorite(String docId, bool currentValue) async {
     if (user == null) return;
@@ -40,8 +36,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
         .doc(docId)
         .update({"isFavorite": !currentValue});
   }
-
-  //////////////////////////////////////////////////////////
 
   Future<void> _deleteSummary(String docId) async {
     if (user == null) return;
@@ -57,8 +51,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
       context,
     ).showSnackBar(const SnackBar(content: Text("Summary deleted")));
   }
-
-  //////////////////////////////////////////////////////////
 
   Future<bool> _confirmDelete(String docId) async {
     final result = await showDialog<bool>(
@@ -87,8 +79,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
     return false;
   }
 
-  ////////////////////////////////////////////////////////////
-
   String _timeAgo(Timestamp? timestamp) {
     if (timestamp == null) return "";
 
@@ -111,9 +101,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
     return "${diff.inDays} days ago";
   }
 
-  ////////////////////////////////////////////////////////////
-  /// POPUP SUMMARY WITH ICONS
-
   void _openSummaryDialog(
     String docId,
     String title,
@@ -129,8 +116,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              //////////////////////////////////////////////////////
-              /// TITLE
               Text(
                 title,
                 style: const TextStyle(
@@ -141,8 +126,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
               const SizedBox(height: 12),
 
-              ////////////////////////////////////////////////////
-              /// SUMMARY
               Container(
                 constraints: const BoxConstraints(maxHeight: 300),
                 child: SingleChildScrollView(

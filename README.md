@@ -2,9 +2,12 @@
 
 An AI-powered study companion mobile application built using **Flutter** and **FastAPI**, designed specifically for **Android devices**. This app helps students efficiently manage notes, convert lectures to text, and generate smart summaries using AI.
 
+
 ---
 
+
 ## 🚀 Features
+
 
 - 📄 **Upload Notes**  
   Supports PDF and TXT file uploads for easy study material management.
@@ -21,9 +24,12 @@ An AI-powered study companion mobile application built using **Flutter** and **F
 - 🕘 **Study History**  
   Keep track of previously uploaded notes and generated summaries.
 
+
 ---
 
+
 ## 🛠️ Tech Stack
+
 
 ### Frontend (Mobile)
 - Flutter (Android only)
@@ -39,9 +45,12 @@ An AI-powered study companion mobile application built using **Flutter** and **F
 ### Database
 - Firebase / Supabase
 
+
 ---
 
+
 ## 📂 Project Structure
+
 
 ```
 lib/
@@ -52,21 +61,24 @@ lib/
 ├── routes/      # Navigation routes
 ├── services/    # API and backend services
 ├── widgets/     # Reusable UI components
-│
 ├── app.dart     # App configuration
 └── main.dart    # Entry point
 ```
 
 ---
 
+
 ## ⚙️ Installation & Setup
+
 
 ### Prerequisites
 - Flutter SDK installed
 - Android Studio or VS Code
 - Android device or emulator
 
+
 ### Steps
+
 
 1. **Clone the repository**
 ```bash
@@ -86,13 +98,18 @@ flutter run
 
 ---
 
+
 ## 📱 Platform Support
+
 
 - Android  
 
+
 ---
 
+
 ## 🔐 Configuration
+
 
 - Add your Firebase configuration in:
   ```
@@ -101,7 +118,9 @@ flutter run
 
 - Set up your API keys (OpenAI / backend) securely in your project.
 
+
 ---
+
 
 ## 🧠 How It Works
 

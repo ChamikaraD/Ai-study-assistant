@@ -5,6 +5,8 @@ import '../../../services/openai_services.dart';
 import 'quiz_result_screen.dart';
 
 
+
+// This screen shows the quiz generated from the summary
 class QuizScreen extends StatefulWidget {
 
   final String summary;
@@ -22,33 +24,50 @@ class QuizScreen extends StatefulWidget {
 }
 
 
+
+// Handles quiz logic and UI updates
 class _QuizScreenState extends State<QuizScreen> {
 
+  // Service to generate quiz using AI
   final OpenAIService _aiService = OpenAIService();
 
 
+  // Stores all quiz questions
   List<Map<String, dynamic>> quiz = [];
 
+
+  // Stores user's selected answers
   Map<int, String> answers = {};
 
+
+  // Loading state while quiz is being generated
   bool isLoading = true;
 
+
+  // Final score
   int score = 0;
+
 
 
   @override
   void initState() {
     super.initState();
+
+    // Generate quiz when screen loads
     generateQuiz();
   }
 
 
+
+  // Calls AI service and gets quiz data
   Future<void> generateQuiz() async {
 
     quiz = await _aiService.generateQuiz(
       widget.summary,
     );
 
+
+    // Stop loading once data is ready
     setState(() {
       isLoading = false;
     });
@@ -56,17 +75,24 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
 
+
+  // Calculates score and navigates to result screen
   void submitQuiz() {
 
     score = 0;
 
+
+    // Check each answer
     for (int i = 0; i < quiz.length; i++) {
+
       if (answers[i] == quiz[i]["correctAnswer"]) {
         score++;
       }
+
     }
 
 
+    // Go to result screen
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -80,9 +106,11 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
 
+    // Show loading spinner while quiz is generating
     if (isLoading) {
       return const Scaffold(
         body: Center(
@@ -92,6 +120,7 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
 
+
     return Scaffold(
 
       appBar: AppBar(
@@ -99,6 +128,8 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
 
 
+
+      // List of questions
       body: ListView.builder(
 
         padding: const EdgeInsets.all(16),
@@ -114,9 +145,10 @@ class _QuizScreenState extends State<QuizScreen> {
           );
 
 
+
           return Card(
 
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: 20),
 
             child: Padding(
 
@@ -128,17 +160,20 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 children: [
 
+                  // Question text
                   Text(
                     question,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
 
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 15),
 
 
+                  // Options (radio buttons)
                   ...options.map((option) {
 
                     return RadioListTile<String>(
@@ -149,6 +184,8 @@ class _QuizScreenState extends State<QuizScreen> {
 
                       groupValue: answers[index],
 
+
+                      // Save selected answer
                       onChanged: (value) {
                         setState(() {
                           answers[index] = value!;
@@ -172,6 +209,8 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
 
 
+
+      // Submit button
       floatingActionButton: FloatingActionButton.extended(
 
         onPressed: submitQuiz,

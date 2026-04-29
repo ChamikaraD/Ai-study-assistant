@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 
+
+// This screen shows the final quiz result
 class QuizResultScreen extends StatelessWidget {
 
+  // User's score
   final int score;
 
+  // Total number of questions
   final int total;
 
 
@@ -15,23 +19,28 @@ class QuizResultScreen extends StatelessWidget {
   });
 
 
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
+      // Top app bar with title
       appBar: AppBar(
         title: const Text("Result"),
       ),
+
 
       body: Center(
 
         child: Column(
 
+          // Center everything vertically
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
 
+            // Trophy icon for visual feedback
             const Icon(
               Icons.emoji_events,
               size: 80,
@@ -39,9 +48,10 @@ class QuizResultScreen extends StatelessWidget {
             ),
 
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
 
+            // Label text
             Text(
               "Your Score",
               style: TextStyle(
@@ -50,9 +60,10 @@ class QuizResultScreen extends StatelessWidget {
             ),
 
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
 
+            // Display score
             Text(
               "$score / $total",
               style: const TextStyle(
@@ -62,9 +73,10 @@ class QuizResultScreen extends StatelessWidget {
             ),
 
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
 
+            // Button to go back to previous screen
             ElevatedButton(
 
               onPressed: () {
